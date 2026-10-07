@@ -1,0 +1,8 @@
+{
+  "name": "Nature Go - Outdoor Vision Quest",
+  "description": "Screen-free outdoor exploration app powered by Vision Intelligence to verify real natural discoveries and guide expeditions with audio.",
+  "requestFramePermissions": [
+    "camera"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
