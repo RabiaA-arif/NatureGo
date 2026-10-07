@@ -148,6 +148,9 @@ function evaluateFallbackVision(questTarget: string, base64: string, scenarioId?
   };
 }
 
+// Track if upstream quota is exhausted to prevent spamming exhausted endpoints
+let quotaExhaustedUntil: number = 0;
+
 // Primary Vision Intelligence System endpoint for Nature Go
 app.post('/api/verify-quest', async (req, res) => {
   try {
@@ -168,7 +171,16 @@ app.post('/api/verify-quest', async (req, res) => {
     // Clean base64 string if it contains prefix
     const cleanBase64 = imageBase64.replace(/^data:image\/[a-zA-Z+]+;base64,/, '');
 
-    const systemInstruction = `You are the primary Vision Intelligence System for "Nature Go", a screen-free outdoor exploration app.
+    let responseText = '';
+    let usedFallback = false;
+    let finalResult;
+
+    // If quota was previously exhausted, route directly to Vision Engine without triggering 429 errors
+    const isQuotaExhausted = Date.now() < quotaExhaustedUntil;
+
+    if (!isQuotaExhausted) {
+      try {
+        const systemInstruction = `You are the primary Vision Intelligence System for "Nature Go", a screen-free outdoor exploration app.
 Your task is to analyze an incoming image taken by a user's camera to verify if they are physically outside in a genuine natural environment completing their assigned quest.
 
 QUEST ASSIGNMENT:
@@ -185,79 +197,83 @@ EVALUATION CRITERIA:
 OUTPUT FORMAT INSTRUCTIONS:
 You MUST output ONLY a valid raw JSON object. Do not include markdown code blocks (no \`\`\`json), no conversational greetings, and no additional explanations outside the JSON object.`;
 
-    const promptText = `Analyze this camera capture for the assigned quest target: "${questTarget}".
+        const promptText = `Analyze this camera capture for the assigned quest target: "${questTarget}".
 Verify strictly against the anti-spoofing criteria (reject screens, prints, indoors, fake objects) and confirm natural outdoor context.
 Return strict JSON format with is_valid, detected_target, confidence_score, rejection_reason, and nature_fact.`;
 
-    let responseText = '';
-    let usedFallback = false;
-    let finalResult;
+        // 3.5-second timeout promise
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error('timeout')), 3500)
+        );
 
-    try {
-      // 4.5-second timeout promise
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('Gemini API timeout')), 4500)
-      );
-
-      const geminiPromise = ai.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: {
-          parts: [
-            {
-              inlineData: {
-                mimeType: mimeType || 'image/jpeg',
-                data: cleanBase64,
+        const geminiPromise = ai.models.generateContent({
+          model: 'gemini-3.8-flash',
+          contents: {
+            parts: [
+              {
+                inlineData: {
+                  mimeType: mimeType || 'image/jpeg',
+                  data: cleanBase64,
+                },
               },
-            },
-            {
-              text: promptText,
-            },
-          ],
-        },
-        config: {
-          systemInstruction,
-          responseMimeType: 'application/json',
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              is_valid: {
-                type: Type.BOOLEAN,
-                description: 'Whether the target matches, is authentic real outdoor nature, and meets all criteria.',
+              {
+                text: promptText,
               },
-              detected_target: {
-                type: Type.STRING,
-                description: 'String describing what was actually spotted in the photo.',
-              },
-              confidence_score: {
-                type: Type.NUMBER,
-                description: 'Float between 0.00 and 1.00 indicating confidence.',
-              },
-              rejection_reason: {
-                type: Type.STRING,
-                description: "Value 'null' if verified successfully, or a descriptive string explaining why it failed (e.g., 'Screen spoof detected', 'Indoor houseplant', 'Target missing', 'Printed image detected', 'Indoor lighting/surroundings').",
-              },
-              nature_fact: {
-                type: Type.STRING,
-                description: 'A fascinating 1-sentence educational fact about the verified target object to play via audio narration.',
-              },
-            },
-            required: [
-              'is_valid',
-              'detected_target',
-              'confidence_score',
-              'rejection_reason',
-              'nature_fact',
             ],
           },
-        },
-      });
+          config: {
+            systemInstruction,
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                is_valid: {
+                  type: Type.BOOLEAN,
+                  description: 'Whether the target matches, is authentic real outdoor nature, and meets all criteria.',
+                },
+                detected_target: {
+                  type: Type.STRING,
+                  description: 'String describing what was actually spotted in the photo.',
+                },
+                confidence_score: {
+                  type: Type.NUMBER,
+                  description: 'Float between 0.00 and 1.00 indicating confidence.',
+                },
+                rejection_reason: {
+                  type: Type.STRING,
+                  description: "Value 'null' if verified successfully, or a descriptive string explaining why it failed (e.g., 'Screen spoof detected', 'Indoor houseplant', 'Target missing', 'Printed image detected', 'Indoor lighting/surroundings').",
+                },
+                nature_fact: {
+                  type: Type.STRING,
+                  description: 'A fascinating 1-sentence educational fact about the verified target object to play via audio narration.',
+                },
+              },
+              required: [
+                'is_valid',
+                'detected_target',
+                'confidence_score',
+                'rejection_reason',
+                'nature_fact',
+              ],
+            },
+          },
+        });
 
-      const response = await Promise.race([geminiPromise, timeoutPromise]);
-      responseText = response.text?.trim() || '{}';
-      const cleanJson = responseText.replace(/^```json\s*/i, '').replace(/```$/i, '').trim();
-      finalResult = JSON.parse(cleanJson);
-    } catch (err: unknown) {
-      console.warn('Gemini vision API unavailable or timed out, activating fallback intelligence:', (err as Error).message);
+        const response = await Promise.race([geminiPromise, timeoutPromise]);
+        responseText = response.text?.trim() || '{}';
+        const cleanJson = responseText.replace(/^```json\s*/i, '').replace(/```$/i, '').trim();
+        finalResult = JSON.parse(cleanJson);
+      } catch (err: unknown) {
+        const errMsg = (err as Error)?.message || '';
+        // If 429 quota exhaustion or unavailable, mark quota tracker to avoid repeated failures
+        if (errMsg.includes('429') || errMsg.includes('RESOURCE_EXHAUSTED') || errMsg.includes('quota')) {
+          quotaExhaustedUntil = Date.now() + 60 * 60 * 1000; // 1 hour cooldown
+        }
+        usedFallback = true;
+        finalResult = evaluateFallbackVision(questTarget, cleanBase64, scenarioId);
+        responseText = JSON.stringify(finalResult);
+      }
+    } else {
       usedFallback = true;
       finalResult = evaluateFallbackVision(questTarget, cleanBase64, scenarioId);
       responseText = JSON.stringify(finalResult);
