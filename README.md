@@ -26,7 +26,12 @@ The core verification engine checks every snapshot across three rigorous criteri
    - ❌ **Rejects** indoor houseplants inside offices or living rooms.
 3. **Outdoor Natural Context**: Confirms real outdoor sunlight, soil, open atmosphere, and wild flora surroundings.
 
-### 2. 🎧 Screen-Free "Pocket Audio Walk"
+### 2. 📸 Privacy-First Camera Launcher & Close Controls
+- **Never Auto-Opens Camera**: Starting or choosing a quest displays a clean quest briefing card and waits for the user to explicitly tap "Start Camera".
+- **Permission On-Demand**: Requests browser camera permissions only when the user is ready to snap their outdoor target.
+- **Instant Close / Exit Button**: A prominent Close Camera (`X`) button in the top-right corner and bottom action bar immediately stops all media tracks and turns off webcam hardware anytime.
+
+### 3. 🎧 Screen-Free "Pocket Audio Walk"
 - **Eyes-Free Exploration**: Explorers can put their phone in their pocket or lanyard. The app speaks quest directions and targets aloud.
 - **Tactile Full-Screen Shutter**: Tap anywhere on the dimmed screen with haptic feedback to snap a photo when you spot your target.
 - **Immediate Audio Readout**: Automatically narrates the discovery results and fascinating nature facts using natural voice speech synthesis.
