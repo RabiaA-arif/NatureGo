@@ -53,6 +53,22 @@ Instant simulations for first-time users or indoor testing:
 - Pre-built quests across Forest, Meadow, Sky & Water, and Micro-Nature biomes.
 - **Custom Quest Creator**: Parents, teachers, and adventurers can define any custom target (e.g., *"oak acorn"*, *"dandelion clock"*, *"river pebble"*).
 
+### 6. 👤 User Login, Profiles & Cloud Progress Sync
+- **Firebase Authentication & Firestore Database**: Sign in via Google or instant 1-click Explorer login to save data in the database for easy access next time.
+- **Daily Nature Streak Counter**:
+  - Tracks consecutive calendar days where a user completes at least one verified nature quest.
+  - Automatically handles day-to-day transitions, increments on consecutive days, prevents duplicate counts on the same day, and updates all-time personal best streaks.
+  - Displays a dedicated streak flame card, status advisories, and a rolling 7-day weekly activity tracker directly inside the User Profile Modal.
+- **User Profile Management**: Manage callsign, avatar, favorite biomes, bio, and review real-time quest completion stats & streak days.
+- **Automatic Task Synchronization**: Every verified outdoor find is recorded in Firestore (`/users/{userId}/discoveries`), syncing progress across sessions.
+
+### 7. 🛡️ Nature Admin Dashboard
+- **Admin Authentication**: Dedicated admin access (`rabiaarifai55@gmail.com`) with administrative privileges.
+- **Explorer Directory**: Inspect all registered explorers in Firestore, their completed tasks, streak, authenticity score, and role.
+- **Profile Builder**: Admin can create and save new explorer profiles directly into the database.
+- **Mission Dispatcher**: Deploy brand-new official outdoor quests directly into the explorer catalog.
+- **Task & Verification Controls**: Award completed tasks, inspect anti-spoof flags, and adjust permissions.
+
 ---
 
 ## 🛠️ Technical Architecture

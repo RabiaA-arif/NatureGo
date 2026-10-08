@@ -1,0 +1,157 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Explorer profile data stored in Firestore",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Unique user ID from Firebase Auth"
+        },
+        "email": {
+          "type": "string",
+          "description": "User email address"
+        },
+        "displayName": {
+          "type": "string",
+          "description": "User display name or explorer callsign"
+        },
+        "photoURL": {
+          "type": "string",
+          "description": "User profile avatar image URL"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["user", "admin"],
+          "description": "User role: standard explorer or nature admin"
+        },
+        "totalQuestsCompleted": {
+          "type": "number",
+          "description": "Total number of verified outdoor quests completed"
+        },
+        "streakDays": {
+          "type": "number",
+          "description": "Consecutive days of outdoor exploration"
+        },
+        "longestStreak": {
+          "type": "number",
+          "description": "All-time longest streak in days"
+        },
+        "lastQuestDate": {
+          "type": "string",
+          "description": "Date of the last completed quest (YYYY-MM-DD)"
+        },
+        "completedDates": {
+          "type": "array",
+          "description": "List of recent YYYY-MM-DD dates with completed quests"
+        },
+        "authenticityScore": {
+          "type": "number",
+          "description": "Average outdoor anti-spoof authenticity score (0-100)"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Account creation timestamp"
+        },
+        "lastLoginAt": {
+          "type": "string",
+          "description": "Last activity or login timestamp"
+        }
+      },
+      "required": ["userId", "email", "role"]
+    },
+    "JournalDiscovery": {
+      "title": "JournalDiscovery",
+      "description": "A verified outdoor natural discovery saved in the explorer journal",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique discovery identifier"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Explorer user ID who discovered the object"
+        },
+        "userDisplayName": {
+          "type": "string",
+          "description": "Explorer name"
+        },
+        "questTarget": {
+          "type": "string",
+          "description": "The assigned target object (e.g. green leaf, tree bark)"
+        },
+        "questTitle": {
+          "type": "string",
+          "description": "Title of the quest"
+        },
+        "photoDataUrl": {
+          "type": "string",
+          "description": "Captured image data URL or thumbnail"
+        },
+        "detectedTarget": {
+          "type": "string",
+          "description": "Target verified by Vision Intelligence"
+        },
+        "confidenceScore": {
+          "type": "number",
+          "description": "Verification confidence score (0.00 - 1.00)"
+        },
+        "natureFact": {
+          "type": "string",
+          "description": "Educational fact narrated to user"
+        },
+        "isValid": {
+          "type": "boolean",
+          "description": "Whether target was verified authentic outdoor nature"
+        },
+        "timestamp": {
+          "type": "number",
+          "description": "Epoch timestamp of the discovery"
+        }
+      },
+      "required": ["id", "userId", "questTarget", "isValid", "timestamp"]
+    },
+    "AdminRecord": {
+      "title": "AdminRecord",
+      "description": "Privileged administrator designation document",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "Admin user UID"
+        },
+        "email": {
+          "type": "string",
+          "description": "Admin email address"
+        },
+        "assignedAt": {
+          "type": "string",
+          "description": "Timestamp when admin role was granted"
+        }
+      },
+      "required": ["userId", "email"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "UserProfile"
+      },
+      "description": "User profile information, stats, and exploration progress"
+    },
+    "/users/{userId}/discoveries/{discoveryId}": {
+      "schema": {
+        "$ref": "JournalDiscovery"
+      },
+      "description": "Individual verified discoveries recorded by an explorer"
+    },
+    "/admins/{userId}": {
+      "schema": {
+        "$ref": "AdminRecord"
+      },
+      "description": "Verified system administrators with access to the Admin Dashboard"
+    }
+  }
+}

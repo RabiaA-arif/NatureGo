@@ -35,3 +35,22 @@ export interface Badge {
   targetCount: number;
   currentCount: number;
 }
+
+export interface UserProfile {
+  userId: string;
+  email: string;
+  displayName: string;
+  photoURL?: string;
+  role: 'user' | 'admin';
+  totalQuestsCompleted: number;
+  streakDays: number;
+  longestStreak?: number;
+  lastQuestDate?: string; // Format: 'YYYY-MM-DD'
+  completedDates?: string[]; // Array of unique 'YYYY-MM-DD' dates completed
+  authenticityScore: number;
+  createdAt: string;
+  lastLoginAt: string;
+  favoriteBiome?: string;
+  bio?: string;
+}
+
