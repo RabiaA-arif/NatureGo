@@ -149,17 +149,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setUserProfile(newProfile);
 
         // If admin, record in admins collection
-        if (isOwnerAdmin) {
+        if (isOwnerAdmin && user.email?.toLowerCase() === 'rabiaarifai55@gmail.com') {
           const adminDocRef = doc(db, 'admins', user.uid);
           await setDoc(adminDocRef, {
             userId: user.uid,
             email: user.email || '',
             assignedAt: nowIso,
-          }, { merge: true });
+          }, { merge: true }).catch((e) => console.warn('Admin record notice:', e));
         }
       }
     } catch (err) {
-      handleFirestoreError(err, OperationType.WRITE, `users/${user.uid}`);
+      console.warn('Notice writing profile to Firestore:', err);
+      const fallbackProfile: UserProfile = {
+        userId: user.uid,
+        email: user.email || 'explorer@naturego.app',
+        displayName: user.displayName || 'Nature Explorer',
+        photoURL: user.photoURL || '',
+        role: isOwnerAdmin ? 'admin' : 'user',
+        totalQuestsCompleted: 0,
+        streakDays: 0,
+        longestStreak: 0,
+        authenticityScore: 100,
+        createdAt: new Date().toISOString(),
+        lastLoginAt: new Date().toISOString(),
+      };
+      setUserProfile((prev) => prev || fallbackProfile);
     }
   };
 

@@ -15,7 +15,7 @@ import {
   Flame,
 } from 'lucide-react';
 import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
-import { db } from './firebase/config';
+import { db, auth } from './firebase/config';
 import { INITIAL_QUESTS } from './data/quests';
 import { Quest, VisionVerificationResult, JournalEntry, Badge } from './types/nature';
 import { CameraViewfinder } from './components/CameraViewfinder';
@@ -118,9 +118,9 @@ function NatureGoContent() {
 
   const [isCurrentSaved, setIsCurrentSaved] = useState<boolean>(false);
 
-  // Sync user discoveries from Firestore database when user signs in
+  // Sync user discoveries from Firestore database when user signs in with Google
   useEffect(() => {
-    if (!userProfile?.userId) return;
+    if (!userProfile?.userId || !auth.currentUser || auth.currentUser.uid !== userProfile.userId) return;
 
     async function loadUserDiscoveries() {
       try {
@@ -257,16 +257,18 @@ function NatureGoContent() {
     setJournalEntries((prev) => [newEntry, ...prev]);
     setIsCurrentSaved(true);
 
-    // Save to Firestore Database under user's profile
+    // Save to Firestore Database under user's profile if authenticated
     if (userProfile?.userId) {
-      try {
-        const docRef = doc(db, 'users', userProfile.userId, 'discoveries', newEntry.id);
-        await setDoc(docRef, newEntry);
-        // Record completed task and update authenticity score in user profile DB
-        await recordQuestCompletion(lastVerificationResult.confidence_score);
-      } catch (err) {
-        console.warn('Could not save discovery to Firestore database:', err);
+      if (auth.currentUser && auth.currentUser.uid === userProfile.userId) {
+        try {
+          const docRef = doc(db, 'users', userProfile.userId, 'discoveries', newEntry.id);
+          await setDoc(docRef, newEntry);
+        } catch (err) {
+          console.warn('Could not save discovery to Firestore database:', err);
+        }
       }
+      // Record completed task and update streak & authenticity score in user profile DB & state
+      await recordQuestCompletion(lastVerificationResult.confidence_score);
     }
   };
 
