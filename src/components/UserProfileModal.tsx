@@ -13,13 +13,27 @@ import {
   Calendar,
   AlertCircle,
   Trophy,
+  BarChart3,
+  TrendingUp,
 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Cell,
+  CartesianGrid,
+} from 'recharts';
 import { useAuth } from '../context/AuthContext';
+import { JournalEntry } from '../types/nature';
 
 interface UserProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenAdminDashboard?: () => void;
+  journalEntries?: JournalEntry[];
 }
 
 function getTodayString(): string {
@@ -30,10 +44,21 @@ function getTodayString(): string {
   return `${year}-${month}-${day}`;
 }
 
+interface DailyStreakData {
+  dateStr: string;
+  dayName: string;
+  shortDate: string;
+  questsCount: number;
+  isCompleted: boolean;
+  isToday: boolean;
+  statusLabel: string;
+}
+
 export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   isOpen,
   onClose,
   onOpenAdminDashboard,
+  journalEntries,
 }) => {
   const { userProfile, updateProfileData, logout, isAdmin } = useAuth();
 
@@ -51,13 +76,49 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   const longestStreak = Math.max(userProfile.longestStreak ?? 0, streakDays);
 
   // Set of dates user completed quests
-  const completedDateSet = new Set(userProfile.completedDates || []);
+  const completedDateSet = new Set<string>(userProfile.completedDates || []);
   if (userProfile.lastQuestDate) {
     completedDateSet.add(userProfile.lastQuestDate);
   }
 
-  // Generate 7-day rolling streak tracker
-  const weekDays = Array.from({ length: 7 }).map((_, i) => {
+  // Also include dates covered by current active streak if lastQuestDate is recent
+  if (userProfile.streakDays > 0 && userProfile.lastQuestDate) {
+    const [lY, lM, lD] = userProfile.lastQuestDate.split('-').map(Number);
+    const lastDateObj = new Date(lY, lM - 1, lD);
+    for (let s = 0; s < userProfile.streakDays; s++) {
+      const pastD = new Date(lastDateObj);
+      pastD.setDate(pastD.getDate() - s);
+      const y = pastD.getFullYear();
+      const m = String(pastD.getMonth() + 1).padStart(2, '0');
+      const d = String(pastD.getDate()).padStart(2, '0');
+      completedDateSet.add(`${y}-${m}-${d}`);
+    }
+  }
+
+  // Load journal entries to get exact counts per day
+  const resolvedEntries: JournalEntry[] = journalEntries || (() => {
+    try {
+      const saved = localStorage.getItem('nature_go_journal');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  })();
+
+  const countsByDate = new Map<string, number>();
+  resolvedEntries.forEach((entry) => {
+    if (entry.timestamp) {
+      const d = new Date(entry.timestamp);
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const key = `${y}-${m}-${day}`;
+      countsByDate.set(key, (countsByDate.get(key) || 0) + 1);
+    }
+  });
+
+  // Generate 7-day rolling data for the Recharts bar chart
+  const chartData: DailyStreakData[] = Array.from({ length: 7 }).map((_, i) => {
     const d = new Date();
     d.setDate(d.getDate() - (6 - i));
     const year = d.getFullYear();
@@ -65,10 +126,38 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
     const day = String(d.getDate()).padStart(2, '0');
     const dateStr = `${year}-${month}-${day}`;
     const dayName = d.toLocaleDateString(undefined, { weekday: 'short' });
+    const shortDate = `${d.getMonth() + 1}/${d.getDate()}`;
     const isToday = dateStr === todayStr;
-    const isCompleted = completedDateSet.has(dateStr);
-    return { dateStr, dayName, isToday, isCompleted };
+
+    const journalCount = countsByDate.get(dateStr) || 0;
+    const isMarkedCompleted = completedDateSet.has(dateStr);
+    // If user completed a quest according to streak or completedDates, guarantee at least 1
+    const questsCount = Math.max(journalCount, isMarkedCompleted ? 1 : 0);
+    const isCompleted = questsCount > 0;
+
+    let statusLabel = 'No Quests';
+    if (isToday) {
+      statusLabel = isCompleted ? 'Completed Today!' : 'Incomplete (Goal: 1 Quest)';
+    } else if (isCompleted) {
+      statusLabel = 'Streak Maintained';
+    } else {
+      statusLabel = 'No Activity';
+    }
+
+    return {
+      dateStr,
+      dayName,
+      shortDate,
+      questsCount,
+      isCompleted,
+      isToday,
+      statusLabel,
+    };
   });
+
+  // Calculate weekly stats
+  const activeDaysCount = chartData.filter((d) => d.isCompleted).length;
+  const totalWeeklyQuests = chartData.reduce((acc, curr) => acc + curr.questsCount, 0);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -209,15 +298,172 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               )}
             </p>
 
+            {/* 7-Day Recharts Bar Chart Visualization */}
+            <div className="bg-neutral-950/70 border border-neutral-800/80 rounded-2xl p-3.5 mb-3.5">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="w-4 h-4 text-emerald-400" />
+                  <span className="text-xs font-bold text-white">
+                    7-Day Streak & Quest Activity
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="text-neutral-400">
+                    Active:{' '}
+                    <strong className="text-emerald-400 font-bold">
+                      {activeDaysCount}/7 days
+                    </strong>
+                  </span>
+                  <span className="text-neutral-600">·</span>
+                  <span className="text-neutral-400">
+                    Weekly Quests:{' '}
+                    <strong className="text-white font-bold">
+                      {totalWeeklyQuests}
+                    </strong>
+                  </span>
+                </div>
+              </div>
+
+              {/* Recharts Bar Chart */}
+              <div className="w-full h-36 min-h-[144px] relative">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={chartData}
+                    margin={{ top: 12, right: 8, left: -24, bottom: 2 }}
+                  >
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="#262626"
+                      vertical={false}
+                    />
+                    <XAxis
+                      dataKey="dayName"
+                      stroke="#737373"
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={{ stroke: '#333333' }}
+                    />
+                    <YAxis
+                      stroke="#737373"
+                      fontSize={10}
+                      tickLine={false}
+                      axisLine={{ stroke: '#333333' }}
+                      allowDecimals={false}
+                      domain={[0, (dataMax: number) => Math.max(2, dataMax + 1)]}
+                    />
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length > 0) {
+                          const data = payload[0].payload as DailyStreakData;
+                          return (
+                            <div className="bg-neutral-950/95 border border-neutral-700/80 rounded-xl p-2.5 shadow-2xl backdrop-blur-md text-xs pointer-events-none min-w-[150px]">
+                              <div className="flex items-center justify-between gap-2 mb-1">
+                                <span className="font-bold text-white">
+                                  {data.dayName} · {data.shortDate}
+                                </span>
+                                {data.isToday && (
+                                  <span className="text-[9px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded font-bold border border-amber-500/40">
+                                    TODAY
+                                  </span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1.5 my-1">
+                                <span className="text-base font-black text-emerald-400">
+                                  {data.questsCount}
+                                </span>
+                                <span className="text-neutral-300 font-medium">
+                                  {data.questsCount === 1 ? 'quest completed' : 'quests completed'}
+                                </span>
+                              </div>
+                              <div className="pt-1.5 mt-1 border-t border-neutral-800 flex items-center gap-1.5 text-[11px]">
+                                {data.isCompleted ? (
+                                  <span className="text-emerald-400 font-semibold flex items-center gap-1">
+                                    <Flame className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                                    Streak Maintained!
+                                  </span>
+                                ) : data.isToday ? (
+                                  <span className="text-amber-400 font-semibold flex items-center gap-1">
+                                    <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                                    Pending Today (Goal: 1)
+                                  </span>
+                                ) : (
+                                  <span className="text-neutral-500">
+                                    Missed · No Quests
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                      cursor={{ fill: 'rgba(255, 255, 255, 0.05)' }}
+                    />
+                    <Bar
+                      dataKey="questsCount"
+                      radius={[6, 6, 0, 0]}
+                      maxBarSize={32}
+                    >
+                      {chartData.map((entry, index) => {
+                        let fill = '#262626'; // Missed day / 0
+                        if (entry.isCompleted) {
+                          fill = entry.isToday ? '#10b981' : '#059669';
+                        } else if (entry.isToday) {
+                          fill = '#b45309'; // Amber reminder bar
+                        }
+                        return (
+                          <Cell
+                            key={`streak-cell-${index}`}
+                            fill={fill}
+                            stroke={
+                              entry.isToday
+                                ? entry.isCompleted
+                                  ? '#34d399'
+                                  : '#f59e0b'
+                                : undefined
+                            }
+                            strokeWidth={entry.isToday ? 2 : 0}
+                          />
+                        );
+                      })}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Chart Legend / Guide */}
+              <div className="flex flex-wrap items-center justify-between gap-2 mt-2 pt-2 border-t border-neutral-900 text-[10px] text-neutral-400">
+                <div className="flex items-center gap-3">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block" />
+                    <span>Streak Maintained (≥1)</span>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block" />
+                    <span>Today's Target</span>
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-sm bg-neutral-800 inline-block" />
+                    <span>No Quests</span>
+                  </span>
+                </div>
+                <span className="text-neutral-500 italic">
+                  Daily streak extends with each verified quest
+                </span>
+              </div>
+            </div>
+
             {/* 7-Day Rolling Weekly Visual Tracker */}
             <div>
               <div className="flex items-center justify-between text-[11px] text-neutral-400 mb-2 font-medium">
-                <span>Last 7 Days Activity</span>
-                <span>Complete $\ge$ 1 quest daily</span>
+                <span>Daily Status Checklist</span>
+                <span className="text-emerald-400 font-medium">
+                  {streakDays > 0 ? `🔥 ${streakDays}-Day Active Streak` : 'Start your streak!'}
+                </span>
               </div>
 
               <div className="grid grid-cols-7 gap-1.5">
-                {weekDays.map((day) => (
+                {chartData.map((day) => (
                   <div
                     key={day.dateStr}
                     className={`flex flex-col items-center justify-center p-2 rounded-xl border text-center transition ${
@@ -242,8 +488,8 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       )}
                     </div>
 
-                    <span className="text-[9px] mt-0.5 text-neutral-400">
-                      {day.isToday ? 'Today' : ''}
+                    <span className="text-[9px] mt-0.5 text-neutral-400 font-medium">
+                      {day.isToday ? 'Today' : `${day.questsCount}q`}
                     </span>
                   </div>
                 ))}

@@ -687,6 +687,7 @@ function NatureGoContent() {
         isOpen={isProfileModalOpen}
         onClose={() => setIsProfileModalOpen(false)}
         onOpenAdminDashboard={() => setActiveTab('admin')}
+        journalEntries={journalEntries}
       />
 
       {/* Footer */}
