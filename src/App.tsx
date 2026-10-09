@@ -417,7 +417,7 @@ function NatureGoContent() {
             }`}
           >
             <Compass className="w-4 h-4" />
-            <span>Choose Quest ({quests.length})</span>
+            <span>Quests & Challenges ({quests.length})</span>
           </button>
           <button
             onClick={() => setActiveTab('journal')}
@@ -616,6 +616,7 @@ function NatureGoContent() {
                 setLastCapturedImage(null);
               }}
               onAddCustomQuest={handleAddCustomQuest}
+              journalEntries={journalEntries}
             />
           </div>
         )}

@@ -36,6 +36,21 @@ export interface Badge {
   currentCount: number;
 }
 
+export interface Challenge {
+  id: string;
+  title: string;
+  description: string;
+  category: 'daily' | 'biome' | 'mastery' | 'special';
+  icon: string;
+  badgeReward: string;
+  targetCount: number;
+  currentCount: number;
+  completed: boolean;
+  associatedQuestTarget?: string;
+  xpReward: number;
+  difficulty: 'easy' | 'medium' | 'hard' | 'expert';
+}
+
 export interface UserProfile {
   userId: string;
   email: string;

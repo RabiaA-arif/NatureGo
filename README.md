@@ -54,8 +54,14 @@ Instant simulations for first-time users or indoor testing:
   - 🛡️ **Wilderness Pure**: Pass 3 anti-spoof checks with >85% confidence.
   - 🧭 **Master Naturalist**: Log 5+ verified species in the journal.
 
-### 5. 🎯 Quests Catalog & Custom Targets
-- Pre-built quests across Forest, Meadow, Sky & Water, and Micro-Nature biomes.
+### 5. 🎯 Quests Catalog & Expedition Challenges
+- **20 Diverse Nature Quests**:
+  - **🌲 Forest Biome**: Chlorophyll Beacon (green leaf), Ancient Armor (tree bark), Seed of the Conifer (pinecone), The Seed of Giants (acorn), Ancient Fern Frond, Pine Needle Carpet, and Mycelial Marvel (wild mushroom).
+  - **🌊 Water & Sky Biome**: Living Current (running water), Atmospheric Horizon (sky & clouds), Riverbed Sculptures (smooth river pebble), and Solstice Glow (golden hour sunlight).
+  - **🌼 Meadow Biome**: Meadow Bloom (wildflower), Whispering Grasses (prairie grass seed head), Mother Soil (forest dirt), Avian Whispers (wild bird feather), and The Busy Pollinator (outdoor bee on blossom).
+  - **🔬 Micro-Nature Biome**: Emerald Carpet (moss on stone), Morning Dew Pearls (dewdrops on petals), Silken Geometry (outdoor spiderweb), and Spiral Voyager (wild snail shell).
+- **Expedition Challenges (8 Milestone Quests)**:
+  - Multi-goal naturalist challenges with live progress tracking, XP rewards, and badge unlocks (e.g. *Forest Canopy Triad*, *Hydrology & Horizon Expedition*, *Micro-Naturalist Secrets*, *Wild Meadow Bio-Quest*, *Zero-Spoof Mastery*, *The Fungal Forager*, *Daily Ranger Sprint*, and *Four Biomes Grand Slam*).
 - **Custom Quest Creator**: Parents, teachers, and adventurers can define any custom target (e.g., *"oak acorn"*, *"dandelion clock"*, *"river pebble"*).
 
 ### 6. 👤 User Login, Profiles & Cloud Progress Sync

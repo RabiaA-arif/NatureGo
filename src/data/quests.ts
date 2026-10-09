@@ -1,6 +1,7 @@
 import { Quest } from '../types/nature';
 
 export const INITIAL_QUESTS: Quest[] = [
+  // Forest Biome Quests
   {
     id: 'quest-leaf',
     target: 'green leaf',
@@ -44,6 +45,62 @@ export const INITIAL_QUESTS: Quest[] = [
     ],
   },
   {
+    id: 'quest-acorn',
+    target: 'wild acorn or oak nut',
+    category: 'forest',
+    title: 'The Seed of Giants',
+    description: 'Find a wild fallen acorn with its cupule cap resting on the forest dirt or trail.',
+    iconName: 'TreePine',
+    difficulty: 'medium',
+    hints: [
+      'Search beneath mature oak trees on unpaved ground',
+      'Look for the smooth brown nut and its bumpy wooden cap',
+      'Wild woodland birds and squirrels often stash them in mossy crevices',
+    ],
+  },
+  {
+    id: 'quest-fern',
+    target: 'wild outdoor fern frond',
+    category: 'forest',
+    title: 'Ancient Fern Frond',
+    description: 'Spot a feathery wild fern frond growing in the shade of outdoor woodland canopy.',
+    iconName: 'Leaf',
+    difficulty: 'medium',
+    hints: [
+      'Look near fallen logs, shaded creek banks, or damp tree roots',
+      'Notice the fractal leaflets (pinnae) unfurling in the breeze',
+    ],
+  },
+  {
+    id: 'quest-pineneedles',
+    target: 'pine needle bed on forest floor',
+    category: 'forest',
+    title: 'Conifer Needle Carpet',
+    description: 'Capture a natural blanket of dry pine needles resting across the woodland trail ground.',
+    iconName: 'Trees',
+    difficulty: 'easy',
+    hints: [
+      'Look beneath evergreen pine or fir groves',
+      'Notice the rich rust-brown colors and resin scent',
+    ],
+  },
+  {
+    id: 'quest-mushroom',
+    target: 'wild woodland mushroom or tree fungus',
+    category: 'forest',
+    title: 'Mycelial Marvel',
+    description: 'Locate a wild bracket fungus on deadwood or a mushroom cap sprouting in outdoor forest soil.',
+    iconName: 'Sparkles',
+    difficulty: 'hard',
+    hints: [
+      'Look on decaying logs, damp bark, or shaded humus soil',
+      'Inspect shelf fungi growing sideways off old tree stumps',
+      'Never touch unknown wild mushrooms—just photograph from a respectful distance',
+    ],
+  },
+
+  // Sky & Water Biome Quests
+  {
     id: 'quest-water',
     target: 'running water',
     category: 'water_sky',
@@ -72,18 +129,33 @@ export const INITIAL_QUESTS: Quest[] = [
     ],
   },
   {
-    id: 'quest-moss',
-    target: 'moss on stone',
-    category: 'micro_nature',
-    title: 'Emerald Carpet',
-    description: 'Find a patch of damp, vibrant moss clinging to an outdoor rock, boulder, or damp forest stone.',
-    iconName: 'Sparkles',
-    difficulty: 'medium',
+    id: 'quest-pebble',
+    target: 'smooth river pebble or stream stone',
+    category: 'water_sky',
+    title: 'Riverbed Sculptures',
+    description: 'Find a naturally tumbled, water-smoothed river stone or pebble resting by creek bed or outdoor gravel.',
+    iconName: 'Droplets',
+    difficulty: 'easy',
     hints: [
-      'Look in shaded, damp outdoor spots near tree bases or streams',
-      'Notice the velvety tiny structures holding morning moisture',
+      'Look along river edges, drainage creeks, or outdoor gravel banks',
+      'Notice the smooth rounded contours polished by flowing water',
     ],
   },
+  {
+    id: 'quest-horizon',
+    target: 'outdoor golden hour sunlight or twilight sky',
+    category: 'water_sky',
+    title: 'Solstice Glow',
+    description: 'Capture the warm radiant glow of low-angle outdoor sunlight filtering through open air and trees.',
+    iconName: 'CloudSun',
+    difficulty: 'medium',
+    hints: [
+      'Best spotted during morning sunrise or late afternoon golden hour',
+      'Look for long tree shadows and warm amber light on outdoor leaves',
+    ],
+  },
+
+  // Meadow & Field Biome Quests
   {
     id: 'quest-flower',
     target: 'wildflower or dandelion',
@@ -98,6 +170,19 @@ export const INITIAL_QUESTS: Quest[] = [
     ],
   },
   {
+    id: 'quest-tallgrass',
+    target: 'wild prairie grass seed head',
+    category: 'meadow',
+    title: 'Whispering Grasses',
+    description: 'Find tall wild meadow grass with feathery seed heads swaying in the outdoor wind.',
+    iconName: 'Leaf',
+    difficulty: 'easy',
+    hints: [
+      'Check park boundaries, open fields, or trail edges',
+      'Look for the wheat-like grains or nodding seed plumes at the top',
+    ],
+  },
+  {
     id: 'quest-soil',
     target: 'earth soil and dirt',
     category: 'meadow',
@@ -108,6 +193,87 @@ export const INITIAL_QUESTS: Quest[] = [
     hints: [
       'Look for natural ground with small twigs, pebbles, and rich earth',
       'Avoid sterile artificial potting mix or tabletop trays',
+    ],
+  },
+  {
+    id: 'quest-feather',
+    target: 'wild bird feather in ground or grass',
+    category: 'meadow',
+    title: 'Avian Whispers',
+    description: 'Search for a naturally molted wild bird feather resting in the grass, trail dust, or lake edge.',
+    iconName: 'Sparkles',
+    difficulty: 'hard',
+    hints: [
+      'Walk slowly near bird feeding areas, open meadows, or pond margins',
+      'Look for fine barbs and natural quill shaft',
+      'Must be resting in wild outdoor surroundings',
+    ],
+  },
+  {
+    id: 'quest-pollinator',
+    target: 'outdoor bee or pollinator on blossom',
+    category: 'meadow',
+    title: 'The Busy Pollinator',
+    description: 'Observe a live bee, bumblebee, or butterfly actively foraging on an outdoor wildflower.',
+    iconName: 'Flower2',
+    difficulty: 'hard',
+    hints: [
+      'Wait quietly beside blooming clover, dandelions, or flowering bushes on warm sunny days',
+      'Keep your camera steady and capture the insect on the petals',
+    ],
+  },
+
+  // Micro-Nature Biome Quests
+  {
+    id: 'quest-moss',
+    target: 'moss on stone',
+    category: 'micro_nature',
+    title: 'Emerald Carpet',
+    description: 'Find a patch of damp, vibrant moss clinging to an outdoor rock, boulder, or damp forest stone.',
+    iconName: 'Sparkles',
+    difficulty: 'medium',
+    hints: [
+      'Look in shaded, damp outdoor spots near tree bases or streams',
+      'Notice the velvety tiny structures holding morning moisture',
+    ],
+  },
+  {
+    id: 'quest-dewdrops',
+    target: 'morning dew drops on plant petal',
+    category: 'micro_nature',
+    title: 'Morning Dew Pearls',
+    description: 'Find delicate, beaded morning moisture drops resting upon outdoor grass blades or leaf surfaces.',
+    iconName: 'Droplets',
+    difficulty: 'medium',
+    hints: [
+      'Head outside early in the morning before full sun evaporation',
+      'Look for miniature spherical liquid lenses clinging to leaf edges',
+    ],
+  },
+  {
+    id: 'quest-spiderweb',
+    target: 'outdoor spiderweb or dew-covered web',
+    category: 'micro_nature',
+    title: 'Silken Geometry',
+    description: 'Spot an outdoor orb spider web strung between outdoor branches, grass stems, or garden shrubs.',
+    iconName: 'Sparkles',
+    difficulty: 'hard',
+    hints: [
+      'Look with the sunlight behind the web to catch the glimmering silk',
+      'Early mornings often reveal webs outlined in miniature dewdrops',
+    ],
+  },
+  {
+    id: 'quest-snail',
+    target: 'wild outdoor snail shell',
+    category: 'micro_nature',
+    title: 'Spiral Voyager',
+    description: 'Discover a garden snail or empty wild snail shell nestled in damp outdoor soil, leaves, or stones.',
+    iconName: 'Compass',
+    difficulty: 'medium',
+    hints: [
+      'Check beneath shaded garden stones, damp bark, or lush ground cover',
+      'Look for the logarithmic spiral shell pattern',
     ],
   },
 ];
