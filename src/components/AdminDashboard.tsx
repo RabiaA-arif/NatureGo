@@ -297,10 +297,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       )}
 
       {/* Admin Dashboard Tabs */}
-      <div className="flex flex-wrap gap-1.5 p-1 bg-neutral-900 rounded-2xl border border-neutral-800 text-xs font-semibold">
+      <div className="flex items-center gap-1.5 p-1 bg-neutral-900 rounded-2xl border border-neutral-800 text-xs font-semibold overflow-x-auto no-scrollbar w-full">
         <button
           onClick={() => setActiveTab('users')}
-          className={`px-3.5 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5 ${
+          className={`px-3 sm:px-3.5 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5 shrink-0 ${
             activeTab === 'users'
               ? 'bg-emerald-600 text-white shadow-sm'
               : 'text-neutral-400 hover:text-white'
@@ -312,7 +312,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('addUser')}
-          className={`px-3.5 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5 ${
+          className={`px-3 sm:px-3.5 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5 shrink-0 ${
             activeTab === 'addUser'
               ? 'bg-emerald-600 text-white shadow-sm'
               : 'text-neutral-400 hover:text-white'
@@ -324,7 +324,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
         <button
           onClick={() => setActiveTab('addQuest')}
-          className={`px-3.5 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5 ${
+          className={`px-3 sm:px-3.5 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5 shrink-0 ${
             activeTab === 'addQuest'
               ? 'bg-emerald-600 text-white shadow-sm'
               : 'text-neutral-400 hover:text-white'
@@ -337,16 +337,16 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* Tab 1: Explorer Profiles Directory */}
       {activeTab === 'users' && (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 sm:p-5 space-y-4">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div>
-              <h3 className="text-base font-bold text-white">Registered Explorer Profiles</h3>
-              <p className="text-xs text-neutral-400">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-3.5 sm:p-5 space-y-4 w-full">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 w-full">
+            <div className="min-w-0">
+              <h3 className="text-sm sm:text-base font-bold text-white truncate">Registered Explorer Profiles</h3>
+              <p className="text-[11px] sm:text-xs text-neutral-400 mt-0.5">
                 User accounts, task completion counts, and outdoor activity stored in database
               </p>
             </div>
 
-            <div className="relative w-full sm:w-64">
+            <div className="relative w-full sm:w-64 shrink-0">
               <Search className="w-4 h-4 text-neutral-500 absolute left-3 top-2.5" />
               <input
                 type="text"
@@ -358,97 +358,189 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
           </div>
 
-          {filteredUsers.length === 0 ? (
+          {isLoading ? (
+            <div className="text-center py-12 text-neutral-400 text-xs flex flex-col items-center justify-center gap-2">
+              <RefreshCw className="w-5 h-5 animate-spin text-emerald-400" />
+              <span>Loading explorer profiles from database...</span>
+            </div>
+          ) : filteredUsers.length === 0 ? (
             <div className="text-center py-10 text-neutral-500 text-xs">
               No explorer profiles found matching your query.
             </div>
           ) : (
-            <div className="overflow-x-auto w-full">
-              <table className="w-full text-left text-xs min-w-[580px]">
-                <thead>
-                  <tr className="border-b border-neutral-800 text-neutral-400">
-                    <th className="pb-3 font-semibold">Explorer</th>
-                    <th className="pb-3 font-semibold">Role</th>
-                    <th className="pb-3 font-semibold">Tasks Done</th>
-                    <th className="pb-3 font-semibold">Streak</th>
-                    <th className="pb-3 font-semibold">Authenticity</th>
-                    <th className="pb-3 font-semibold text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-neutral-800/60">
-                  {filteredUsers.map((user) => (
-                    <tr key={user.userId} className="hover:bg-neutral-950/40 transition">
-                      <td className="py-3">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-lg bg-neutral-800 text-white font-bold flex items-center justify-center">
-                            {user.displayName?.charAt(0).toUpperCase() || 'E'}
-                          </div>
-                          <div>
-                            <p className="font-bold text-white">{user.displayName}</p>
-                            <p className="text-[11px] text-neutral-500">{user.email}</p>
-                          </div>
+            <>
+              {/* MOBILE CARDS VIEW (Clean, touch-friendly, fully responsive on phone screens) */}
+              <div className="block md:hidden space-y-3 w-full">
+                {filteredUsers.map((user) => (
+                  <div
+                    key={`mobile-user-${user.userId}`}
+                    className="p-3 sm:p-3.5 rounded-xl bg-neutral-950/80 border border-neutral-800 hover:border-neutral-700 transition flex flex-col gap-2.5 sm:gap-3 w-full"
+                  >
+                    {/* User Header */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                        <div className="w-9 h-9 rounded-xl bg-neutral-800 text-white font-bold flex items-center justify-center text-sm shrink-0">
+                          {user.displayName?.charAt(0).toUpperCase() || 'E'}
                         </div>
-                      </td>
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold text-white text-sm truncate">{user.displayName}</p>
+                          <p className="text-[11px] text-neutral-500 truncate">{user.email}</p>
+                        </div>
+                      </div>
 
-                      <td className="py-3">
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
-                            user.role === 'admin'
-                              ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                              : 'bg-neutral-800 text-neutral-400'
-                          }`}
-                        >
-                          {user.role}
+                      <span
+                        className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase shrink-0 ${
+                          user.role === 'admin'
+                            ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                            : 'bg-neutral-800 text-neutral-400'
+                        }`}
+                      >
+                        {user.role}
+                      </span>
+                    </div>
+
+                    {/* Stats 3-Col Pills */}
+                    <div className="grid grid-cols-3 gap-1.5 text-center bg-neutral-900/60 p-2 rounded-xl border border-neutral-800/60">
+                      <div className="min-w-0">
+                        <span className="text-[10px] text-neutral-400 block truncate">Tasks</span>
+                        <span className="text-xs font-bold text-white flex items-center justify-center gap-1 mt-0.5 truncate">
+                          <CheckCircle className="w-3 h-3 text-teal-400 shrink-0" />
+                          <span>{user.totalQuestsCompleted || 0}</span>
                         </span>
-                      </td>
-
-                      <td className="py-3 font-bold text-white">
-                        {user.totalQuestsCompleted || 0} quests
-                      </td>
-
-                      <td className="py-3 text-neutral-300">
-                        {user.streakDays || 1} days
-                      </td>
-
-                      <td className="py-3">
-                        <span className="font-semibold text-emerald-400">
-                          {user.authenticityScore || 100}%
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-[10px] text-neutral-400 block truncate">Streak</span>
+                        <span className="text-xs font-bold text-amber-400 flex items-center justify-center gap-1 mt-0.5 truncate">
+                          <Flame className="w-3 h-3 text-amber-400 shrink-0" />
+                          <span>{user.streakDays || 1}d</span>
                         </span>
-                      </td>
+                      </div>
+                      <div className="min-w-0">
+                        <span className="text-[10px] text-neutral-400 block truncate">Authentic</span>
+                        <span className="text-xs font-bold text-emerald-400 flex items-center justify-center gap-1 mt-0.5 truncate">
+                          <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
+                          <span>{user.authenticityScore || 100}%</span>
+                        </span>
+                      </div>
+                    </div>
 
-                      <td className="py-3 text-right space-x-1.5">
-                        <button
-                          onClick={() => setInspectedUser(user)}
-                          className="px-2.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-lg text-[11px] font-medium transition cursor-pointer"
-                        >
-                          Inspect Profile
-                        </button>
-                        <button
-                          onClick={() => handleAwardTask(user)}
-                          className="px-2.5 py-1 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-800/80 rounded-lg text-[11px] font-semibold transition cursor-pointer"
-                          title="Award +1 completed quest"
-                        >
-                          +1 Task
-                        </button>
-                        <button
-                          onClick={() => handleToggleRole(user)}
-                          className="px-2.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg text-[11px] font-medium transition cursor-pointer"
-                        >
-                          {user.role === 'admin' ? 'Make User' : 'Make Admin'}
-                        </button>
-                      </td>
+                    {/* Mobile Action Buttons */}
+                    <div className="grid grid-cols-3 gap-1.5 pt-1 border-t border-neutral-900">
+                      <button
+                        onClick={() => setInspectedUser(user)}
+                        className="py-2 px-1 bg-neutral-800 hover:bg-neutral-700 active:bg-neutral-600 text-neutral-200 rounded-xl text-[10px] sm:text-[11px] font-semibold transition cursor-pointer text-center flex items-center justify-center gap-1 active:scale-95 min-w-0"
+                      >
+                        <Eye className="w-3 h-3 text-sky-400 shrink-0" />
+                        <span className="truncate">Inspect</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleAwardTask(user)}
+                        className="py-2 px-1 bg-emerald-950 hover:bg-emerald-900 active:bg-emerald-800 text-emerald-300 border border-emerald-800/80 rounded-xl text-[10px] sm:text-[11px] font-bold transition cursor-pointer text-center flex items-center justify-center gap-1 active:scale-95 shadow-xs min-w-0"
+                      >
+                        <Award className="w-3 h-3 text-emerald-400 shrink-0" />
+                        <span className="truncate">+1 Task</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleToggleRole(user)}
+                        className="py-2 px-1 bg-neutral-800 hover:bg-neutral-700 active:bg-neutral-600 text-neutral-300 rounded-xl text-[10px] sm:text-[11px] font-semibold transition cursor-pointer text-center truncate active:scale-95 min-w-0"
+                      >
+                        <span className="truncate">{user.role === 'admin' ? 'Set User' : 'Set Admin'}</span>
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* DESKTOP & TABLET TABLE VIEW */}
+              <div className="hidden md:block overflow-x-auto w-full">
+                <table className="w-full text-left text-xs min-w-[580px]">
+                  <thead>
+                    <tr className="border-b border-neutral-800 text-neutral-400">
+                      <th className="pb-3 font-semibold">Explorer</th>
+                      <th className="pb-3 font-semibold">Role</th>
+                      <th className="pb-3 font-semibold">Tasks Done</th>
+                      <th className="pb-3 font-semibold">Streak</th>
+                      <th className="pb-3 font-semibold">Authenticity</th>
+                      <th className="pb-3 font-semibold text-right">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-neutral-800/60">
+                    {filteredUsers.map((user) => (
+                      <tr key={user.userId} className="hover:bg-neutral-950/40 transition">
+                        <td className="py-3">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-lg bg-neutral-800 text-white font-bold flex items-center justify-center">
+                              {user.displayName?.charAt(0).toUpperCase() || 'E'}
+                            </div>
+                            <div>
+                              <p className="font-bold text-white">{user.displayName}</p>
+                              <p className="text-[11px] text-neutral-500">{user.email}</p>
+                            </div>
+                          </div>
+                        </td>
+
+                        <td className="py-3">
+                          <span
+                            className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                              user.role === 'admin'
+                                ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                                : 'bg-neutral-800 text-neutral-400'
+                            }`}
+                          >
+                            {user.role}
+                          </span>
+                        </td>
+
+                        <td className="py-3 font-bold text-white">
+                          {user.totalQuestsCompleted || 0} quests
+                        </td>
+
+                        <td className="py-3 text-neutral-300">
+                          {user.streakDays || 1} days
+                        </td>
+
+                        <td className="py-3">
+                          <span className="font-semibold text-emerald-400">
+                            {user.authenticityScore || 100}%
+                          </span>
+                        </td>
+
+                        <td className="py-3 text-right space-x-1.5">
+                          <button
+                            onClick={() => setInspectedUser(user)}
+                            className="px-2.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-lg text-[11px] font-medium transition cursor-pointer"
+                          >
+                            Inspect Profile
+                          </button>
+                          <button
+                            onClick={() => handleAwardTask(user)}
+                            className="px-2.5 py-1 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-800/80 rounded-lg text-[11px] font-semibold transition cursor-pointer"
+                            title="Award +1 completed quest"
+                          >
+                            +1 Task
+                          </button>
+                          <button
+                            onClick={() => handleToggleRole(user)}
+                            className="px-2.5 py-1 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg text-[11px] font-medium transition cursor-pointer"
+                          >
+                            {user.role === 'admin' ? 'Make User' : 'Make Admin'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       )}
 
       {/* Tab 2: Build New User Profile and Save in DB */}
       {activeTab === 'addUser' && (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 sm:p-6 max-w-xl">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 sm:p-6 max-w-xl w-full">
           <h3 className="text-base font-bold text-white mb-1">
             Build User Profile & Save to Database
           </h3>
@@ -485,7 +577,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-medium text-neutral-300 mb-1">
                   Assigned Role
@@ -533,7 +625,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             <button
               type="submit"
-              className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer shadow-md"
+              className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer shadow-md active:scale-98"
             >
               <UserPlus className="w-4 h-4" />
               <span>Save User Profile in Database</span>
@@ -544,7 +636,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* Tab 3: Deploy Official Quest */}
       {activeTab === 'addQuest' && (
-        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-5 sm:p-6 max-w-xl">
+        <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 sm:p-6 max-w-xl w-full">
           <h3 className="text-base font-bold text-white mb-1">
             Deploy Official Quest Mission
           </h3>
@@ -580,7 +672,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-medium text-neutral-300 mb-1">
                   Biome Category
@@ -628,7 +720,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
             <button
               type="submit"
-              className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer shadow-md"
+              className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 transition cursor-pointer shadow-md active:scale-98"
             >
               <Compass className="w-4 h-4" />
               <span>Deploy Quest to Active Roster</span>
@@ -639,73 +731,78 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* Profile Inspection Drawer / Modal */}
       {inspectedUser && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl">
-            <div className="p-5 flex items-center justify-between border-b border-neutral-800">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl sm:rounded-3xl w-full max-w-md max-h-[92vh] flex flex-col overflow-hidden shadow-2xl my-auto animate-in fade-in duration-200">
+            <div className="p-3.5 sm:p-5 flex items-center justify-between border-b border-neutral-800 shrink-0">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 mr-2">
+                <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-base shrink-0 shadow">
                   {inspectedUser.displayName?.charAt(0).toUpperCase() || 'E'}
                 </div>
-                <div>
-                  <h4 className="text-base font-bold text-white">{inspectedUser.displayName}</h4>
-                  <p className="text-xs text-neutral-400">{inspectedUser.email}</p>
+                <div className="min-w-0 flex-1">
+                  <h4 className="text-sm sm:text-base font-bold text-white truncate">{inspectedUser.displayName}</h4>
+                  <p className="text-[11px] sm:text-xs text-neutral-400 truncate">{inspectedUser.email}</p>
                 </div>
               </div>
               <button
                 onClick={() => setInspectedUser(null)}
-                className="p-1.5 text-neutral-400 hover:text-white rounded-lg hover:bg-neutral-800"
+                className="p-1.5 text-neutral-400 hover:text-white rounded-xl hover:bg-neutral-800 transition cursor-pointer shrink-0"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-5 space-y-4 text-xs">
-              <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="p-2.5 bg-neutral-950 rounded-xl border border-neutral-800">
-                  <span className="text-neutral-400 block text-[10px]">Quests Done</span>
-                  <span className="text-base font-bold text-white">{inspectedUser.totalQuestsCompleted}</span>
+            <div className="p-3.5 sm:p-5 space-y-3.5 sm:space-y-4 text-xs overflow-y-auto">
+              <div className="grid grid-cols-3 gap-1.5 sm:gap-2 text-center">
+                <div className="p-2 sm:p-2.5 bg-neutral-950 rounded-xl border border-neutral-800 min-w-0">
+                  <span className="text-neutral-400 block text-[10px] truncate">Quests Done</span>
+                  <span className="text-sm sm:text-base font-bold text-white block mt-0.5 truncate">{inspectedUser.totalQuestsCompleted}</span>
                 </div>
-                <div className="p-2.5 bg-neutral-950 rounded-xl border border-neutral-800">
-                  <span className="text-neutral-400 block text-[10px]">Streak</span>
-                  <span className="text-base font-bold text-amber-400">{inspectedUser.streakDays}d</span>
+                <div className="p-2 sm:p-2.5 bg-neutral-950 rounded-xl border border-neutral-800 min-w-0">
+                  <span className="text-neutral-400 block text-[10px] truncate">Streak</span>
+                  <span className="text-sm sm:text-base font-bold text-amber-400 block mt-0.5 truncate">{inspectedUser.streakDays}d</span>
                 </div>
-                <div className="p-2.5 bg-neutral-950 rounded-xl border border-neutral-800">
-                  <span className="text-neutral-400 block text-[10px]">Authenticity</span>
-                  <span className="text-base font-bold text-emerald-400">{inspectedUser.authenticityScore}%</span>
+                <div className="p-2 sm:p-2.5 bg-neutral-950 rounded-xl border border-neutral-800 min-w-0">
+                  <span className="text-neutral-400 block text-[10px] truncate">Authenticity</span>
+                  <span className="text-sm sm:text-base font-bold text-emerald-400 block mt-0.5 truncate">{inspectedUser.authenticityScore}%</span>
                 </div>
               </div>
 
-              <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 space-y-1.5">
-                <p className="text-neutral-400">
-                  Role: <strong className="text-white capitalize">{inspectedUser.role}</strong>
-                </p>
-                <p className="text-neutral-400">
-                  Favorite Biome: <strong className="text-emerald-300">{inspectedUser.favoriteBiome || 'Forest'}</strong>
-                </p>
-                <p className="text-neutral-400">
-                  User UID: <span className="font-mono text-[10px] text-neutral-300">{inspectedUser.userId}</span>
-                </p>
-                <p className="text-neutral-400">
-                  Last Active: <span className="text-neutral-300">{new Date(inspectedUser.lastLoginAt).toLocaleString()}</span>
-                </p>
+              <div className="p-3 bg-neutral-950 rounded-xl border border-neutral-800 space-y-2">
+                <div className="flex items-center justify-between text-neutral-400 text-xs">
+                  <span>Role:</span>
+                  <strong className="text-white capitalize">{inspectedUser.role}</strong>
+                </div>
+                <div className="flex items-center justify-between text-neutral-400 text-xs">
+                  <span>Favorite Biome:</span>
+                  <strong className="text-emerald-300">{inspectedUser.favoriteBiome || 'Forest'}</strong>
+                </div>
+                <div className="text-neutral-400 text-xs space-y-1">
+                  <span>User UID:</span>
+                  <span className="font-mono text-[10px] text-neutral-300 break-all block bg-neutral-900/80 p-1.5 rounded-lg border border-neutral-800/80 select-all">{inspectedUser.userId}</span>
+                </div>
+                <div className="flex items-center justify-between text-neutral-400 text-xs pt-0.5">
+                  <span>Last Active:</span>
+                  <span className="text-neutral-300 text-[10px] sm:text-[11px]">{new Date(inspectedUser.lastLoginAt).toLocaleDateString()} {new Date(inspectedUser.lastLoginAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                </div>
               </div>
 
               {inspectedUser.bio && (
-                <div className="p-3 bg-neutral-950/60 rounded-xl border border-neutral-800/80 italic text-neutral-300">
+                <div className="p-3 bg-neutral-950/60 rounded-xl border border-neutral-800/80 italic text-neutral-300 text-xs leading-relaxed">
                   "{inspectedUser.bio}"
                 </div>
               )}
 
-              <div className="flex items-center justify-between gap-2 pt-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-1">
                 <button
                   onClick={() => handleAwardTask(inspectedUser)}
-                  className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition text-xs"
+                  className="w-full sm:flex-1 py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-sm"
                 >
-                  Award +1 Completed Task
+                  <Award className="w-3.5 h-3.5" />
+                  <span>Award +1 Completed Task</span>
                 </button>
                 <button
                   onClick={() => handleToggleRole(inspectedUser)}
-                  className="py-2.5 px-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl font-semibold transition text-xs"
+                  className="w-full sm:w-auto py-2.5 px-3.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl font-semibold transition text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95"
                 >
                   {inspectedUser.role === 'admin' ? 'Revoke Admin' : 'Make Admin'}
                 </button>
