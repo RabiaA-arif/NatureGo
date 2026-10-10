@@ -23,6 +23,9 @@ interface VerificationCardProps {
   onRetake: () => void;
   isSaved: boolean;
   autoPlayAudio?: boolean;
+  isRepeatRun?: boolean;
+  repeatCount?: number;
+  onNextQuest?: () => void;
 }
 
 export const VerificationCard: React.FC<VerificationCardProps> = ({
@@ -33,6 +36,9 @@ export const VerificationCard: React.FC<VerificationCardProps> = ({
   onRetake,
   isSaved,
   autoPlayAudio = true,
+  isRepeatRun = false,
+  repeatCount = 0,
+  onNextQuest,
 }) => {
   const [isPlayingAudio, setIsPlayingAudio] = useState<boolean>(false);
   const [showRawJson, setShowRawJson] = useState<boolean>(false);
@@ -75,31 +81,31 @@ export const VerificationCard: React.FC<VerificationCardProps> = ({
   const confidencePercent = Math.round((result.confidence_score || 0) * 100);
 
   return (
-    <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden shadow-xl transition">
+    <div className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden shadow-xl transition w-full">
       {/* Status Header */}
       <div
-        className={`p-4 sm:p-5 flex items-center justify-between border-b ${
+        className={`p-3.5 sm:p-5 flex items-center justify-between border-b gap-2 ${
           result.is_valid
             ? 'bg-emerald-950/40 border-emerald-900/60'
             : 'bg-amber-950/30 border-amber-900/40'
         }`}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+            className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center shrink-0 ${
               result.is_valid
                 ? 'bg-emerald-900/50 text-emerald-400 border border-emerald-700/60'
                 : 'bg-amber-900/40 text-amber-400 border border-amber-700/50'
             }`}
           >
             {result.is_valid ? (
-              <ShieldCheck className="w-5 h-5" />
+              <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
             ) : (
-              <ShieldAlert className="w-5 h-5" />
+              <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5" />
             )}
           </div>
-          <div>
-            <div className="flex items-center gap-2 text-xs">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
               <span
                 className={`font-bold ${
                   result.is_valid ? 'text-emerald-400' : 'text-amber-400'
@@ -110,7 +116,7 @@ export const VerificationCard: React.FC<VerificationCardProps> = ({
               <span className="text-neutral-500">·</span>
               <span className="text-neutral-400">{confidencePercent}% Match</span>
             </div>
-            <h3 className="text-base font-bold text-white mt-0.5">
+            <h3 className="text-sm sm:text-base font-bold text-white mt-0.5 truncate">
               {result.is_valid
                 ? `You found a real ${result.detected_target}!`
                 : result.rejection_reason || 'Could not verify target'}
@@ -120,10 +126,10 @@ export const VerificationCard: React.FC<VerificationCardProps> = ({
 
         <button
           onClick={onRetake}
-          className="p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg transition cursor-pointer"
+          className="p-1.5 sm:p-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg transition cursor-pointer shrink-0"
           title="Try another photo"
         >
-          <RotateCcw className="w-5 h-5" />
+          <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </div>
 
@@ -270,36 +276,60 @@ export const VerificationCard: React.FC<VerificationCardProps> = ({
                 </p>
               </div>
             )}
+
+            {/* Saved Confirmation Banner */}
+            {isSaved && (
+              <div className="p-2.5 sm:p-3 bg-emerald-950/70 border border-emerald-800 rounded-xl text-xs text-emerald-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 animate-in fade-in">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>
+                    {isRepeatRun
+                      ? `✓ Completed again (Run #${repeatCount + 1})! Saved to Nature Log.`
+                      : '✓ Quest Completed! Recorded in your Nature Log.'}
+                  </span>
+                </div>
+                {onNextQuest && (
+                  <button
+                    onClick={onNextQuest}
+                    className="w-full sm:w-auto px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition cursor-pointer text-center shadow-xs"
+                  >
+                    Next Quest →
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-wrap items-center gap-2.5 pt-1">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-2.5 pt-1 w-full">
             {result.is_valid && (
               <button
                 onClick={onSaveToJournal}
                 disabled={isSaved}
-                className="flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer shadow-md"
+                className="w-full sm:flex-1 py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer shadow-md"
               >
                 <BookOpen className="w-4 h-4" />
                 <span>{isSaved ? 'Saved to Journal ✓' : 'Save to My Journal'}</span>
               </button>
             )}
 
-            <button
-              onClick={onRetake}
-              className="py-2.5 px-4 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer"
-            >
-              <RotateCcw className="w-4 h-4" />
-              <span>Try Another</span>
-            </button>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button
+                onClick={onRetake}
+                className="flex-1 sm:flex-none py-2.5 px-4 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>Try Another</span>
+              </button>
 
-            <button
-              onClick={() => setShowRawJson(!showRawJson)}
-              className="p-2.5 text-neutral-400 hover:text-neutral-200 bg-neutral-950 hover:bg-neutral-800 rounded-xl transition border border-neutral-800 text-xs flex items-center gap-1 cursor-pointer"
-              title="View JSON Details"
-            >
-              <Code className="w-3.5 h-3.5" />
-            </button>
+              <button
+                onClick={() => setShowRawJson(!showRawJson)}
+                className="p-2.5 text-neutral-400 hover:text-neutral-200 bg-neutral-950 hover:bg-neutral-800 rounded-xl transition border border-neutral-800 text-xs flex items-center justify-center gap-1 cursor-pointer"
+                title="View JSON Details"
+              >
+                <Code className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
       </div>

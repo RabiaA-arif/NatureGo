@@ -128,28 +128,28 @@ export const ChallengesPanel: React.FC<ChallengesPanelProps> = ({
   return (
     <div className="space-y-4">
       {/* Challenges Overview Banner */}
-      <div className="bg-gradient-to-r from-emerald-950/70 via-neutral-900 to-teal-950/70 border border-emerald-800/60 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center shrink-0">
+      <div className="bg-gradient-to-r from-emerald-950/70 via-neutral-900 to-teal-950/70 border border-emerald-800/60 rounded-2xl p-3.5 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 w-full">
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center shrink-0">
             <Trophy className="w-5 h-5" />
           </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h3 className="text-base font-bold text-white">
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <h3 className="text-sm sm:text-base font-bold text-white truncate">
                 Nature Challenges
               </h3>
-              <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-950 text-amber-300 border border-amber-800/80 px-2 py-0.5 rounded-full">
-                {completedCount} of {evaluatedChallenges.length} Done
+              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-amber-950 text-amber-300 border border-amber-800/80 px-2 py-0.5 rounded-full shrink-0">
+                {completedCount}/{evaluatedChallenges.length} Done
               </span>
             </div>
-            <p className="text-xs text-neutral-400 mt-0.5">
+            <p className="text-[11px] sm:text-xs text-neutral-400 mt-0.5 truncate">
               Complete fun challenge goals to earn badges and XP!
             </p>
           </div>
         </div>
 
         {/* Global Progress Bar */}
-        <div className="w-full sm:w-44 bg-neutral-950 p-2.5 rounded-xl border border-neutral-800 shrink-0">
+        <div className="w-full sm:w-44 bg-neutral-950 p-2 sm:p-2.5 rounded-xl border border-neutral-800 shrink-0">
           <div className="flex items-center justify-between text-[11px] mb-1 font-semibold">
             <span className="text-neutral-400">Progress</span>
             <span className="text-emerald-400">
@@ -168,7 +168,7 @@ export const ChallengesPanel: React.FC<ChallengesPanelProps> = ({
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-1.5 p-1 bg-neutral-900 rounded-xl border border-neutral-800 text-xs font-medium">
+      <div className="flex items-center gap-1.5 p-1 bg-neutral-900 rounded-xl border border-neutral-800 text-xs font-medium overflow-x-auto no-scrollbar w-full">
         {[
           { id: 'all', label: `All (${evaluatedChallenges.length})` },
           { id: 'biome', label: 'Nature Sets' },
@@ -179,7 +179,7 @@ export const ChallengesPanel: React.FC<ChallengesPanelProps> = ({
           <button
             key={tab.id}
             onClick={() => setFilter(tab.id as any)}
-            className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
+            className={`px-3 py-1.5 rounded-lg transition cursor-pointer shrink-0 text-[11px] sm:text-xs ${
               filter === tab.id
                 ? 'bg-emerald-600 text-white font-semibold shadow-sm'
                 : 'text-neutral-400 hover:text-white'
@@ -191,7 +191,7 @@ export const ChallengesPanel: React.FC<ChallengesPanelProps> = ({
       </div>
 
       {/* Challenges Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3 w-full">
         {filteredChallenges.map((challenge) => {
           const progressPercent = Math.round(
             (challenge.currentCount / challenge.targetCount) * 100
@@ -200,7 +200,7 @@ export const ChallengesPanel: React.FC<ChallengesPanelProps> = ({
           return (
             <div
               key={challenge.id}
-              className={`p-4 rounded-2xl border transition flex flex-col justify-between ${
+              className={`p-3.5 sm:p-4 rounded-2xl border transition flex flex-col justify-between w-full ${
                 challenge.completed
                   ? 'bg-gradient-to-br from-emerald-950/40 via-neutral-900 to-neutral-950 border-emerald-700/60 shadow-md'
                   : 'bg-neutral-900/90 border-neutral-800 hover:border-neutral-700'
@@ -208,18 +208,18 @@ export const ChallengesPanel: React.FC<ChallengesPanelProps> = ({
             >
               <div>
                 {/* Card Header */}
-                <div className="flex items-start justify-between gap-3 mb-2.5">
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-2xl p-2 bg-neutral-950 rounded-xl border border-neutral-800">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                    <span className="text-xl sm:text-2xl p-1.5 sm:p-2 bg-neutral-950 rounded-xl border border-neutral-800 shrink-0">
                       {challenge.icon}
                     </span>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h4 className="text-sm font-bold text-white">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <h4 className="text-sm font-bold text-white truncate">
                           {challenge.title}
                         </h4>
                         <span
-                          className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                          className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${
                             challenge.difficulty === 'easy'
                               ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/80'
                               : challenge.difficulty === 'medium'
@@ -230,21 +230,21 @@ export const ChallengesPanel: React.FC<ChallengesPanelProps> = ({
                           {challenge.difficulty}
                         </span>
                       </div>
-                      <span className="text-[11px] text-amber-400 font-semibold flex items-center gap-1 mt-0.5">
-                        <Sparkles className="w-3 h-3" />
+                      <span className="text-[10px] sm:text-[11px] text-amber-400 font-semibold flex items-center gap-1 mt-0.5 truncate">
+                        <Sparkles className="w-3 h-3 shrink-0" />
                         Reward: {challenge.badgeReward} (+{challenge.xpReward} XP)
                       </span>
                     </div>
                   </div>
 
                   {challenge.completed ? (
-                    <span className="text-xs font-bold text-emerald-400 bg-emerald-950/90 border border-emerald-800 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      Completed
+                    <span className="text-[11px] font-bold text-emerald-400 bg-emerald-950/90 border border-emerald-800 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                      <CheckCircle2 className="w-3 h-3" />
+                      Done
                     </span>
                   ) : (
-                    <span className="text-xs font-bold text-neutral-400 shrink-0">
-                      {challenge.currentCount} / {challenge.targetCount}
+                    <span className="text-[11px] font-bold text-neutral-400 shrink-0">
+                      {challenge.currentCount}/{challenge.targetCount}
                     </span>
                   )}
                 </div>

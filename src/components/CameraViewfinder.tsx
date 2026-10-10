@@ -20,6 +20,8 @@ interface CameraViewfinderProps {
   questTitle: string;
   onImageCaptured: (dataUrl: string, mimeType: string, scenarioId?: string) => void;
   isAnalyzing: boolean;
+  isQuestCompleted?: boolean;
+  completionCount?: number;
 }
 
 export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
@@ -27,6 +29,8 @@ export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
   questTitle,
   onImageCaptured,
   isAnalyzing,
+  isQuestCompleted = false,
+  completionCount = 0,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -192,6 +196,11 @@ export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                   <span>Target:</span>
                   <span className="font-bold text-white capitalize">{questTarget}</span>
+                  {isQuestCompleted && (
+                    <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-950 text-emerald-400 border border-emerald-800 hidden sm:inline">
+                      ✓ Done {completionCount > 1 ? `(${completionCount}x)` : ''} · Repeat
+                    </span>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-2 pointer-events-auto">
@@ -251,33 +260,41 @@ export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
           </>
         ) : (
           /* User-Friendly Quest Briefing (Standby Mode) */
-          <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-950">
-            <div className="w-14 h-14 rounded-2xl bg-emerald-950/90 border border-emerald-700/60 text-emerald-400 flex items-center justify-center mb-3 shadow-lg">
-              <Camera className="w-7 h-7" />
+          <div className="w-full h-full flex flex-col items-center justify-center p-4 sm:p-6 text-center bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-950">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-emerald-950/90 border border-emerald-700/60 text-emerald-400 flex items-center justify-center mb-2.5 sm:mb-3 shadow-lg">
+              <Camera className="w-6 h-6 sm:w-7 sm:h-7" />
             </div>
 
-            <h3 className="text-white font-bold text-lg sm:text-xl mb-1 max-w-md">
+            <h3 className="text-white font-bold text-base sm:text-xl mb-1 max-w-md px-2">
               Find <span className="text-emerald-400 capitalize">{questTarget}</span> outside
             </h3>
 
-            <p className="text-neutral-400 text-xs max-w-sm mb-4 leading-relaxed">
+            {isQuestCompleted && (
+              <div className="mb-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 bg-emerald-950/70 border border-emerald-800 rounded-full text-[11px] sm:text-xs font-semibold text-emerald-300">
+                <span>✓ Completed ({completionCount || 1}x)</span>
+                <span className="text-emerald-500">·</span>
+                <span className="text-emerald-400">Repeat Mode</span>
+              </div>
+            )}
+
+            <p className="text-neutral-400 text-xs max-w-sm mb-3 sm:mb-4 leading-relaxed px-2">
               Spot it in nature, then tap below to take a photo or upload one.
             </p>
 
             {/* Camera Permission / Error Alert if any */}
             {cameraError && (
-              <div className="mb-4 max-w-md p-3 bg-rose-950/60 border border-rose-800/80 text-rose-300 rounded-xl text-xs flex items-start gap-2 text-left">
+              <div className="mb-3 sm:mb-4 max-w-md p-2.5 sm:p-3 bg-rose-950/60 border border-rose-800/80 text-rose-300 rounded-xl text-xs flex items-start gap-2 text-left">
                 <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-rose-400" />
-                <p className="leading-relaxed">{cameraError}</p>
+                <p className="leading-relaxed text-[11px] sm:text-xs">{cameraError}</p>
               </div>
             )}
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 sm:gap-3 w-full max-w-xs sm:max-w-none px-4">
               <button
                 onClick={startCamera}
                 disabled={isRequestingPermission}
-                className="px-5 py-3 bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-800 text-white rounded-xl font-bold text-sm flex items-center gap-2 transition shadow-lg shadow-emerald-950 cursor-pointer active:scale-95"
+                className="w-full sm:w-auto px-5 py-2.5 sm:py-3 bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-800 text-white rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition shadow-lg shadow-emerald-950 cursor-pointer active:scale-95"
               >
                 <Play className="w-4 h-4 fill-white" />
                 <span>{isRequestingPermission ? 'Opening...' : 'Start Camera'}</span>
@@ -285,7 +302,7 @@ export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
 
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="px-4 py-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl font-semibold text-sm flex items-center gap-2 transition cursor-pointer"
+                className="w-full sm:w-auto px-4 py-2.5 sm:py-3 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 <Upload className="w-4 h-4" />
                 <span>Upload Photo</span>
@@ -309,14 +326,14 @@ export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
       </div>
 
       {/* Main Action Bar */}
-      <div className="flex items-center justify-between gap-3 bg-neutral-900 border border-neutral-800 p-2.5 sm:p-3 rounded-2xl">
+      <div className="flex items-center justify-between gap-2 sm:gap-3 bg-neutral-900 border border-neutral-800 p-2 sm:p-3 rounded-2xl w-full">
         {/* Flip or Status */}
         {cameraActive ? (
           <button
             onClick={handleFlipCamera}
             disabled={isAnalyzing}
             title="Flip camera"
-            className="p-3 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-30 text-neutral-200 rounded-xl transition flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+            className="p-2.5 sm:p-3 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-30 text-neutral-200 rounded-xl transition flex items-center gap-1.5 text-xs font-semibold cursor-pointer shrink-0"
           >
             <RefreshCw className="w-4 h-4" />
             <span className="hidden sm:inline">Flip</span>
@@ -325,7 +342,7 @@ export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
           <button
             onClick={startCamera}
             disabled={isRequestingPermission}
-            className="p-3 bg-neutral-800 hover:bg-neutral-700 text-emerald-400 rounded-xl transition flex items-center gap-1.5 text-xs font-bold cursor-pointer"
+            className="p-2.5 sm:p-3 bg-neutral-800 hover:bg-neutral-700 text-emerald-400 rounded-xl transition flex items-center gap-1.5 text-xs font-bold cursor-pointer shrink-0"
           >
             <Camera className="w-4 h-4" />
             <span className="hidden sm:inline">Camera</span>
@@ -337,7 +354,7 @@ export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
           <button
             onClick={capturePhoto}
             disabled={isAnalyzing}
-            className="flex-1 max-w-sm py-3.5 px-6 bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition cursor-pointer active:scale-98"
+            className="flex-1 max-w-sm py-3 sm:py-3.5 px-4 sm:px-6 bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-800 disabled:text-neutral-500 text-white rounded-xl font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition cursor-pointer active:scale-98"
           >
             <Camera className="w-4 h-4" />
             <span>Take Photo</span>
@@ -346,7 +363,7 @@ export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
           <button
             onClick={startCamera}
             disabled={isRequestingPermission}
-            className="flex-1 max-w-sm py-3 px-6 bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-800 text-white rounded-xl font-bold text-sm shadow-md flex items-center justify-center gap-2 transition cursor-pointer active:scale-98"
+            className="flex-1 max-w-sm py-2.5 sm:py-3 px-4 sm:px-6 bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-800 text-white rounded-xl font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition cursor-pointer active:scale-98"
           >
             <Play className="w-4 h-4 fill-white" />
             <span>Start Camera</span>
@@ -358,7 +375,7 @@ export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
           <button
             onClick={stopCamera}
             title="Close camera"
-            className="p-3 bg-neutral-800 hover:bg-rose-950/60 hover:text-rose-300 text-neutral-200 rounded-xl transition flex items-center gap-1.5 text-xs font-bold cursor-pointer"
+            className="p-2.5 sm:p-3 bg-neutral-800 hover:bg-rose-950/60 hover:text-rose-300 text-neutral-200 rounded-xl transition flex items-center gap-1.5 text-xs font-bold cursor-pointer shrink-0"
           >
             <X className="w-4 h-4 text-rose-400" />
             <span className="hidden sm:inline">Close</span>
@@ -376,7 +393,7 @@ export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
               onClick={() => fileInputRef.current?.click()}
               disabled={isAnalyzing}
               title="Upload photo"
-              className="p-3 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-30 text-neutral-200 rounded-xl transition flex items-center gap-1.5 text-xs font-semibold cursor-pointer"
+              className="p-2.5 sm:p-3 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-30 text-neutral-200 rounded-xl transition flex items-center gap-1.5 text-xs font-semibold cursor-pointer shrink-0"
             >
               <Upload className="w-4 h-4" />
               <span className="hidden sm:inline">Upload</span>
@@ -386,10 +403,10 @@ export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
       </div>
 
       {/* Demo Samples */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-3.5 sm:p-4 w-full">
         <div className="flex items-center justify-between mb-2.5">
           <div>
-            <h4 className="text-xs font-bold text-white flex items-center gap-1.5">
+            <h4 className="text-xs font-bold text-white flex items-center gap-1.5 flex-wrap">
               <span>Try a Demo Photo</span>
               <span className="text-[11px] text-neutral-400 font-normal">
                 (Instant test, no camera needed)
@@ -398,7 +415,7 @@ export const CameraViewfinder: React.FC<CameraViewfinderProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5">
           {TEST_SCENARIOS.map((scenario) => {
             const isValid = scenario.expectedResult === 'valid';
             return (

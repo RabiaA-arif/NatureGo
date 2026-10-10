@@ -69,3 +69,11 @@ export interface UserProfile {
   bio?: string;
 }
 
+export interface CompletedQuestRecord {
+  questId: string;
+  questTarget: string;
+  count: number;
+  firstCompletedAt: number;
+  lastCompletedAt: number;
+}
+

@@ -48,11 +48,11 @@ export const FieldJournal: React.FC<FieldJournalProps> = ({
   return (
     <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 sm:p-6 space-y-6">
       {/* Journal Header with Stats */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-neutral-800">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-neutral-800 w-full">
         <div>
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-lg font-bold text-white">My Nature Log</h3>
+            <h3 className="text-base sm:text-lg font-bold text-white">My Nature Log</h3>
           </div>
           <p className="text-xs text-neutral-400 mt-0.5">
             Your saved nature discoveries and badges
@@ -60,21 +60,21 @@ export const FieldJournal: React.FC<FieldJournalProps> = ({
         </div>
 
         {/* Top Badges / Tab Switch */}
-        <div className="flex items-center gap-2">
-          <div className="flex p-1 bg-neutral-950 rounded-xl border border-neutral-800 text-xs">
+        <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
+          <div className="flex flex-1 sm:flex-none p-1 bg-neutral-950 rounded-xl border border-neutral-800 text-xs">
             <button
               onClick={() => setActiveTab('entries')}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition ${
+              className={`flex-1 sm:flex-none px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition text-center ${
                 activeTab === 'entries'
                   ? 'bg-emerald-600 text-white'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
-              Saved Finds ({entries.length})
+              Saved ({entries.length})
             </button>
             <button
               onClick={() => setActiveTab('badges')}
-              className={`px-3 py-1.5 rounded-lg font-semibold transition flex items-center gap-1.5 ${
+              className={`flex-1 sm:flex-none px-2.5 sm:px-3 py-1.5 rounded-lg font-semibold transition flex items-center justify-center gap-1.5 ${
                 activeTab === 'badges'
                   ? 'bg-emerald-600 text-white'
                   : 'text-neutral-400 hover:text-white'
@@ -91,7 +91,7 @@ export const FieldJournal: React.FC<FieldJournalProps> = ({
             <button
               onClick={onClearJournal}
               title="Clear journal entries"
-              className="p-2 text-neutral-500 hover:text-rose-400 hover:bg-neutral-800 rounded-lg transition cursor-pointer"
+              className="p-2 text-neutral-500 hover:text-rose-400 hover:bg-neutral-800 rounded-lg transition cursor-pointer shrink-0"
             >
               <Trash2 className="w-4 h-4" />
             </button>

@@ -16,12 +16,14 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultTab?: 'user' | 'admin';
+  onSuccess?: (role: 'user' | 'admin') => void;
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
   defaultTab = 'user',
+  onSuccess,
 }) => {
   const { loginWithGoogle, loginAsDemoExplorer, loginAsAdmin, isLoading } = useAuth();
   const [tab, setTab] = useState<'user' | 'admin'>(defaultTab);
@@ -41,11 +43,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setErrorNotice(null);
     try {
       await loginWithGoogle();
+      onSuccess?.('user');
       onClose();
     } catch (err: unknown) {
       console.warn('Google login popup notice, switching to instant login:', err);
       // Fallback for iframe where popup might be blocked
       await loginAsDemoExplorer(explorerName || 'Nature Explorer', explorerEmail || 'explorer@naturego.app');
+      onSuccess?.('user');
       onClose();
     }
   };
@@ -57,6 +61,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
       const name = explorerName.trim() || 'Alex Woodland';
       const email = explorerEmail.trim() || 'alex.woodland@naturego.app';
       await loginAsDemoExplorer(name, email);
+      onSuccess?.('user');
       onClose();
     } catch (err: unknown) {
       setErrorNotice((err as Error).message || 'Failed to login');
@@ -68,6 +73,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
     setErrorNotice(null);
     try {
       await loginAsAdmin(adminEmail.trim() || 'rabiaarifai55@gmail.com');
+      onSuccess?.('admin');
       onClose();
     } catch (err: unknown) {
       setErrorNotice((err as Error).message || 'Admin login failed');
@@ -75,19 +81,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-neutral-900 border border-neutral-800 rounded-3xl w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl sm:rounded-3xl w-full max-w-md max-h-[94vh] overflow-y-auto shadow-2xl animate-in fade-in duration-200">
         {/* Top Header */}
-        <div className="p-5 pb-3 flex items-center justify-between border-b border-neutral-800">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white">
-              <Compass className="w-5 h-5 text-white" />
+        <div className="p-3.5 sm:p-5 pb-2.5 sm:pb-3 flex items-center justify-between border-b border-neutral-800">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-600 flex items-center justify-center text-white shrink-0">
+              <Compass className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
-            <div>
-              <h3 className="text-base font-bold text-white">
+            <div className="min-w-0">
+              <h3 className="text-sm sm:text-base font-bold text-white truncate">
                 {tab === 'user' ? 'Log In' : 'Admin Access'}
               </h3>
-              <p className="text-xs text-neutral-400">
+              <p className="text-[11px] sm:text-xs text-neutral-400 truncate">
                 {tab === 'user' ? 'Save discoveries and keep your streak' : 'Admin management'}
               </p>
             </div>
@@ -95,14 +101,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 text-neutral-400 hover:text-white rounded-xl hover:bg-neutral-800 transition cursor-pointer"
+            className="p-1.5 sm:p-2 text-neutral-400 hover:text-white rounded-xl hover:bg-neutral-800 transition cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Tab Switcher */}
-        <div className="px-5 pt-4">
+        <div className="px-3.5 sm:px-5 pt-3 sm:pt-4">
           <div className="grid grid-cols-2 p-1 bg-neutral-950 rounded-xl border border-neutral-800 text-xs font-semibold">
             <button
               type="button"

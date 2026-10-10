@@ -185,64 +185,64 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-neutral-900 border border-neutral-800 rounded-3xl w-full max-w-lg max-h-[92vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl sm:rounded-3xl w-full max-w-lg max-h-[94vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in duration-200">
         {/* Header */}
-        <div className="p-5 flex items-center justify-between border-b border-neutral-800 shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold text-lg shadow">
+        <div className="p-3.5 sm:p-5 flex items-center justify-between border-b border-neutral-800 shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold text-base sm:text-lg shadow shrink-0">
               {userProfile.displayName ? userProfile.displayName.charAt(0).toUpperCase() : 'E'}
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white">
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <h3 className="text-sm sm:text-base font-bold text-white truncate">
                   {userProfile.displayName}
                 </h3>
                 {isAdmin ? (
-                  <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-950 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-800">
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-emerald-950 text-emerald-400 px-1.5 py-0.5 rounded-full border border-emerald-800 shrink-0">
                     Admin
                   </span>
                 ) : (
-                  <span className="text-[10px] font-bold uppercase tracking-wider bg-neutral-800 text-neutral-300 px-2 py-0.5 rounded-full">
+                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-neutral-800 text-neutral-300 px-1.5 py-0.5 rounded-full shrink-0">
                     Explorer
                   </span>
                 )}
               </div>
-              <p className="text-xs text-neutral-400">{userProfile.email}</p>
+              <p className="text-[11px] sm:text-xs text-neutral-400 truncate">{userProfile.email}</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 text-neutral-400 hover:text-white rounded-xl hover:bg-neutral-800 transition cursor-pointer"
+            className="p-1.5 sm:p-2 text-neutral-400 hover:text-white rounded-xl hover:bg-neutral-800 transition cursor-pointer shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Scrollable Content */}
-        <div className="overflow-y-auto p-5 space-y-5">
+        <div className="overflow-y-auto p-3.5 sm:p-5 space-y-4 sm:space-y-5">
           {/* Daily Streak Highlight Card */}
-          <div className="bg-gradient-to-br from-amber-950/40 via-neutral-900 to-neutral-950 border border-amber-900/60 rounded-2xl p-4.5 shadow-md">
-            <div className="flex items-start justify-between gap-3 mb-3">
+          <div className="bg-gradient-to-br from-amber-950/40 via-neutral-900 to-neutral-950 border border-amber-900/60 rounded-2xl p-3.5 sm:p-4.5 shadow-md">
+            <div className="flex flex-col sm:flex-row items-start justify-between gap-2.5 sm:gap-3 mb-3">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center shrink-0">
-                  <Flame className="w-7 h-7 text-amber-400 animate-pulse" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center shrink-0">
+                  <Flame className="w-5 h-5 sm:w-7 sm:h-7 text-amber-400 animate-pulse" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-400">
                       Daily Streak
                     </span>
                     <span className="text-neutral-500">·</span>
-                    <span className="text-xs text-neutral-400 flex items-center gap-1">
-                      <Trophy className="w-3.5 h-3.5 text-amber-400" />
-                      Best: <strong className="text-white">{longestStreak} days</strong>
+                    <span className="text-[11px] sm:text-xs text-neutral-400 flex items-center gap-1">
+                      <Trophy className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400" />
+                      Best: <strong className="text-white">{longestStreak}d</strong>
                     </span>
                   </div>
-                  <h4 className="text-2xl font-black text-white mt-0.5 flex items-baseline gap-2">
+                  <h4 className="text-xl sm:text-2xl font-black text-white mt-0.5 flex items-baseline gap-1.5 sm:gap-2">
                     <span>{streakDays}</span>
-                    <span className="text-sm font-semibold text-neutral-300">
+                    <span className="text-xs sm:text-sm font-semibold text-neutral-300">
                       {streakDays === 1 ? 'day streak' : 'days streak'}
                     </span>
                   </h4>
@@ -251,7 +251,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
               {/* Status Badge */}
               <div
-                className={`px-2.5 py-1 rounded-xl text-xs font-bold border flex items-center gap-1.5 shrink-0 ${
+                className={`px-2.5 py-1 rounded-xl text-[11px] sm:text-xs font-bold border flex items-center gap-1.5 shrink-0 self-start sm:self-auto ${
                   isCompletedToday
                     ? 'bg-emerald-950 text-emerald-400 border-emerald-800/80'
                     : streakDays > 0
@@ -261,17 +261,17 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               >
                 {isCompletedToday ? (
                   <>
-                    <CheckCircle className="w-3.5 h-3.5" />
+                    <CheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     <span>Done Today!</span>
                   </>
                 ) : streakDays > 0 ? (
                   <>
-                    <Flame className="w-3.5 h-3.5 text-amber-400" />
+                    <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400" />
                     <span>Active Streak</span>
                   </>
                 ) : (
                   <>
-                    <Compass className="w-3.5 h-3.5" />
+                    <Compass className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                     <span>Start Today</span>
                   </>
                 )}
@@ -279,14 +279,14 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             </div>
 
             {/* Streak Status Tip Message */}
-            <p className="text-xs text-neutral-300 mb-3 leading-relaxed bg-neutral-950/60 p-2.5 rounded-xl border border-neutral-800/60">
+            <p className="text-[11px] sm:text-xs text-neutral-300 mb-3 leading-relaxed bg-neutral-950/60 p-2 sm:p-2.5 rounded-xl border border-neutral-800/60">
               {isCompletedToday ? (
                 <span className="text-emerald-300 font-medium">
                   ✓ Great job! You completed a quest today. Come back tomorrow to keep it going!
                 </span>
               ) : streakDays > 0 ? (
                 <span className="text-amber-300 font-medium flex items-center gap-1.5">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0" />
                   <span>
                     Complete at least 1 quest today to reach {streakDays + 1} days!
                   </span>
@@ -299,19 +299,19 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             </p>
 
             {/* 7-Day Recharts Bar Chart Visualization */}
-            <div className="bg-neutral-950/70 border border-neutral-800/80 rounded-2xl p-3.5 mb-3.5">
+            <div className="bg-neutral-950/70 border border-neutral-800/80 rounded-2xl p-2.5 sm:p-3.5 mb-3 sm:mb-3.5 overflow-hidden">
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4 text-emerald-400" />
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-400" />
                   <span className="text-xs font-bold text-white">
                     Past 7 Days
                   </span>
                 </div>
-                <div className="flex items-center gap-2 text-[11px]">
+                <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-[11px]">
                   <span className="text-neutral-400">
                     Active:{' '}
                     <strong className="text-emerald-400 font-bold">
-                      {activeDaysCount}/7 days
+                      {activeDaysCount}/7d
                     </strong>
                   </span>
                   <span className="text-neutral-600">·</span>
@@ -325,11 +325,11 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               </div>
 
               {/* Recharts Bar Chart */}
-              <div className="w-full h-36 min-h-[144px] relative">
+              <div className="w-full h-36 min-h-[144px] relative overflow-hidden">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={chartData}
-                    margin={{ top: 12, right: 8, left: -24, bottom: 2 }}
+                    margin={{ top: 12, right: 4, left: -24, bottom: 2 }}
                   >
                     <CartesianGrid
                       strokeDasharray="3 3"
@@ -339,7 +339,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                     <XAxis
                       dataKey="dayName"
                       stroke="#737373"
-                      fontSize={11}
+                      fontSize={10}
                       tickLine={false}
                       axisLine={{ stroke: '#333333' }}
                     />
@@ -356,7 +356,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                         if (active && payload && payload.length > 0) {
                           const data = payload[0].payload as DailyStreakData;
                           return (
-                            <div className="bg-neutral-950/95 border border-neutral-700/80 rounded-xl p-2.5 shadow-2xl backdrop-blur-md text-xs pointer-events-none min-w-[150px]">
+                            <div className="bg-neutral-950/95 border border-neutral-700/80 rounded-xl p-2.5 shadow-2xl backdrop-blur-md text-xs pointer-events-none min-w-[140px]">
                               <div className="flex items-center justify-between gap-2 mb-1">
                                 <span className="font-bold text-white">
                                   {data.dayName} · {data.shortDate}
@@ -372,23 +372,23 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                                   {data.questsCount}
                                 </span>
                                 <span className="text-neutral-300 font-medium">
-                                  {data.questsCount === 1 ? 'quest completed' : 'quests completed'}
+                                  {data.questsCount === 1 ? 'quest' : 'quests'}
                                 </span>
                               </div>
-                              <div className="pt-1.5 mt-1 border-t border-neutral-800 flex items-center gap-1.5 text-[11px]">
+                              <div className="pt-1.5 mt-1 border-t border-neutral-800 flex items-center gap-1.5 text-[10px]">
                                 {data.isCompleted ? (
                                   <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                                    <Flame className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                                    <Flame className="w-3 h-3 text-amber-400 shrink-0" />
                                     Streak Maintained!
                                   </span>
                                 ) : data.isToday ? (
                                   <span className="text-amber-400 font-semibold flex items-center gap-1">
-                                    <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                                    <AlertCircle className="w-3 h-3 text-amber-400 shrink-0" />
                                     Pending Today (Goal: 1)
                                   </span>
                                 ) : (
                                   <span className="text-neutral-500">
-                                    Missed · No Quests
+                                    No Quests
                                   </span>
                                 )}
                               </div>
@@ -432,22 +432,22 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               </div>
 
               {/* Chart Legend / Guide */}
-              <div className="flex flex-wrap items-center justify-between gap-2 mt-2 pt-2 border-t border-neutral-900 text-[10px] text-neutral-400">
-                <div className="flex items-center gap-3">
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-sm bg-emerald-500 inline-block" />
-                    <span>Streak Maintained (≥1)</span>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 mt-2 pt-2 border-t border-neutral-900 text-[9px] sm:text-[10px] text-neutral-400">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-xs bg-emerald-500 inline-block" />
+                    <span>Done (≥1)</span>
                   </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-sm bg-amber-500 inline-block" />
-                    <span>Today's Target</span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-xs bg-amber-500 inline-block" />
+                    <span>Today Goal</span>
                   </span>
-                  <span className="flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-sm bg-neutral-800 inline-block" />
-                    <span>No Quests</span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-xs bg-neutral-800 inline-block" />
+                    <span>None</span>
                   </span>
                 </div>
-                <span className="text-neutral-500 italic">
+                <span className="text-neutral-500 italic hidden sm:inline">
                   Daily streak extends with each verified quest
                 </span>
               </div>
@@ -455,18 +455,18 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
 
             {/* 7-Day Rolling Weekly Visual Tracker */}
             <div>
-              <div className="flex items-center justify-between text-[11px] text-neutral-400 mb-2 font-medium">
+              <div className="flex items-center justify-between text-[10px] sm:text-[11px] text-neutral-400 mb-1.5 sm:mb-2 font-medium">
                 <span>Daily Status Checklist</span>
                 <span className="text-emerald-400 font-medium">
-                  {streakDays > 0 ? `🔥 ${streakDays}-Day Active Streak` : 'Start your streak!'}
+                  {streakDays > 0 ? `🔥 ${streakDays}d Streak` : 'Start your streak!'}
                 </span>
               </div>
 
-              <div className="grid grid-cols-7 gap-1.5">
+              <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
                 {chartData.map((day) => (
                   <div
                     key={day.dateStr}
-                    className={`flex flex-col items-center justify-center p-2 rounded-xl border text-center transition ${
+                    className={`flex flex-col items-center justify-center p-1 sm:p-2 rounded-lg sm:rounded-xl border text-center transition min-w-0 ${
                       day.isCompleted
                         ? 'bg-emerald-950/70 border-emerald-600/70 text-emerald-300 shadow-sm'
                         : day.isToday
@@ -474,21 +474,21 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                         : 'bg-neutral-950/60 border-neutral-800 text-neutral-500'
                     }`}
                   >
-                    <span className="text-[10px] font-semibold uppercase block mb-1">
+                    <span className="text-[9px] sm:text-[10px] font-semibold uppercase block mb-0.5 sm:mb-1 truncate w-full">
                       {day.dayName}
                     </span>
 
-                    <div className="w-6 h-6 rounded-full flex items-center justify-center text-xs">
+                    <div className="w-4 h-4 sm:w-6 sm:h-6 rounded-full flex items-center justify-center text-xs">
                       {day.isCompleted ? (
-                        <Flame className="w-4 h-4 text-amber-400" />
+                        <Flame className="w-3 h-3 sm:w-4 sm:h-4 text-amber-400" />
                       ) : day.isToday ? (
-                        <div className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
+                        <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-amber-400 animate-ping" />
                       ) : (
-                        <span className="text-neutral-600 text-xs font-bold">·</span>
+                        <span className="text-neutral-600 text-[10px] font-bold">·</span>
                       )}
                     </div>
 
-                    <span className="text-[9px] mt-0.5 text-neutral-400 font-medium">
+                    <span className="text-[8px] sm:text-[9px] mt-0.5 text-neutral-400 font-medium truncate w-full">
                       {day.isToday ? 'Today' : `${day.questsCount}q`}
                     </span>
                   </div>
@@ -498,43 +498,43 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
           </div>
 
           {/* Core Profile Stats Bar */}
-          <div className="grid grid-cols-3 gap-2 text-center">
-            <div className="p-3 bg-neutral-950 rounded-2xl border border-neutral-800/80">
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 text-center">
+            <div className="p-2 sm:p-3 bg-neutral-950 rounded-xl sm:rounded-2xl border border-neutral-800/80 min-w-0">
               <div className="flex items-center justify-center gap-1 text-emerald-400 mb-0.5">
-                <CheckCircle className="w-4 h-4" />
-                <span className="text-lg font-bold text-white">
+                <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="text-base sm:text-lg font-bold text-white">
                   {userProfile.totalQuestsCompleted}
                 </span>
               </div>
-              <span className="text-[11px] text-neutral-400">Quests Completed</span>
+              <span className="text-[10px] sm:text-[11px] text-neutral-400 block truncate">Quests Done</span>
             </div>
 
-            <div className="p-3 bg-neutral-950 rounded-2xl border border-neutral-800/80">
+            <div className="p-2 sm:p-3 bg-neutral-950 rounded-xl sm:rounded-2xl border border-neutral-800/80 min-w-0">
               <div className="flex items-center justify-center gap-1 text-amber-400 mb-0.5">
-                <Flame className="w-4 h-4" />
-                <span className="text-lg font-bold text-white">
+                <Flame className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="text-base sm:text-lg font-bold text-white">
                   {streakDays}d
                 </span>
               </div>
-              <span className="text-[11px] text-neutral-400">Current Streak</span>
+              <span className="text-[10px] sm:text-[11px] text-neutral-400 block truncate">Streak</span>
             </div>
 
-            <div className="p-3 bg-neutral-950 rounded-2xl border border-neutral-800/80">
+            <div className="p-2 sm:p-3 bg-neutral-950 rounded-xl sm:rounded-2xl border border-neutral-800/80 min-w-0">
               <div className="flex items-center justify-center gap-1 text-teal-400 mb-0.5">
-                <ShieldCheck className="w-4 h-4" />
-                <span className="text-lg font-bold text-white">
+                <ShieldCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span className="text-base sm:text-lg font-bold text-white">
                   {userProfile.authenticityScore}%
                 </span>
               </div>
-              <span className="text-[11px] text-neutral-400">Authenticity Score</span>
+              <span className="text-[10px] sm:text-[11px] text-neutral-400 block truncate">Authenticity</span>
             </div>
           </div>
 
           {/* Profile Edit Form */}
-          <form onSubmit={handleSave} className="space-y-4 pt-1">
+          <form onSubmit={handleSave} className="space-y-3 sm:space-y-4 pt-1">
             {savedNotice && (
-              <div className="p-3 bg-emerald-950/60 border border-emerald-800 text-emerald-300 rounded-xl text-xs flex items-center gap-2">
-                <CheckCircle className="w-4 h-4" />
+              <div className="p-2.5 sm:p-3 bg-emerald-950/60 border border-emerald-800 text-emerald-300 rounded-xl text-xs flex items-center gap-2">
+                <CheckCircle className="w-4 h-4 shrink-0" />
                 <span>Profile and daily streak data saved in Firestore database!</span>
               </div>
             )}
@@ -548,7 +548,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 required
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500"
               />
             </div>
 
@@ -559,7 +559,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
               <select
                 value={favoriteBiome}
                 onChange={(e) => setFavoriteBiome(e.target.value)}
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-emerald-500"
+                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500"
               >
                 <option value="Forest Trail">🌲 Forest Trail</option>
                 <option value="Alpine Summit">🏔️ Alpine Summit & Ridge</option>
@@ -578,21 +578,21 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Tell other explorers about your favorite outdoor spots..."
-                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 resize-none"
+                className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-emerald-500 resize-none"
               />
             </div>
 
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-2">
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
               <button
                 type="button"
                 onClick={handleLogout}
-                className="px-4 py-2.5 bg-neutral-800 hover:bg-rose-950/60 hover:text-rose-400 text-neutral-300 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+                className="w-full sm:w-auto px-4 py-2 bg-neutral-800 hover:bg-rose-950/60 hover:text-rose-400 text-neutral-300 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
                 <span>Sign Out</span>
               </button>
 
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 {isAdmin && onOpenAdminDashboard && (
                   <button
                     type="button"
@@ -600,7 +600,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                       onClose();
                       onOpenAdminDashboard();
                     }}
-                    className="px-4 py-2.5 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer"
+                    className="w-full sm:w-auto px-4 py-2 bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-800 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition cursor-pointer"
                   >
                     <ShieldCheck className="w-4 h-4" />
                     <span>Admin Dashboard</span>
@@ -610,7 +610,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 <button
                   type="submit"
                   disabled={isSaving}
-                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow cursor-pointer"
+                  className="w-full sm:w-auto px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition shadow cursor-pointer"
                 >
                   <Save className="w-4 h-4" />
                   <span>{isSaving ? 'Saving...' : 'Save Profile'}</span>

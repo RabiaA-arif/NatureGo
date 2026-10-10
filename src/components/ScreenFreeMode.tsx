@@ -95,7 +95,7 @@ export const ScreenFreeMode: React.FC<ScreenFreeModeProps> = ({
   return (
     <div
       onClick={handleScreenTap}
-      className="fixed inset-0 z-50 bg-black text-white flex flex-col justify-between p-6 select-none cursor-pointer"
+      className="fixed inset-0 z-50 bg-black text-white flex flex-col justify-between p-4 sm:p-6 select-none cursor-pointer overflow-hidden"
     >
       {/* Top Controls Bar */}
       <div

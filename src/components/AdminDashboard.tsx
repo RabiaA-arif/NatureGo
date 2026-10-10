@@ -212,27 +212,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Admin Navigation Bar */}
-      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-3.5 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 w-full">
+        <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 min-w-0 w-full">
           <button
             onClick={onBack}
-            className="p-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-xl transition cursor-pointer"
+            className="p-2 sm:p-2.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-xl transition cursor-pointer shrink-0 mt-0.5 sm:mt-0"
             title="Return to Explorer Camera"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </button>
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                <span>Nature Go Admin & Profile Dashboard</span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+              <h2 className="text-sm sm:text-lg font-bold text-white flex items-center gap-1.5 sm:gap-2 truncate">
+                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400 shrink-0" />
+                <span>Admin & Profile Dashboard</span>
               </h2>
-              <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded-full">
-                Database Live
+              <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider bg-emerald-950 text-emerald-400 border border-emerald-800 px-1.5 py-0.5 rounded-full shrink-0">
+                Live
               </span>
             </div>
-            <p className="text-xs text-neutral-400">
-              Manage explorer profiles, track completed quest progress in Firestore, and audit authentications
+            <p className="text-[11px] sm:text-xs text-neutral-400 line-clamp-1 mt-0.5">
+              Explorer profiles, completed quests in Firestore, and audit authentications
             </p>
           </div>
         </div>
@@ -240,7 +240,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
         <button
           onClick={fetchUsers}
           disabled={isLoading}
-          className="px-3.5 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+          className="w-full sm:w-auto px-3.5 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer shrink-0"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
           <span>Refresh Database</span>
@@ -248,41 +248,41 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       </div>
 
       {/* KPI Overview Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="p-3.5 bg-neutral-900 border border-neutral-800 rounded-2xl">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 w-full">
+        <div className="p-3 sm:p-3.5 bg-neutral-900 border border-neutral-800 rounded-2xl min-w-0">
           <div className="flex items-center justify-between text-neutral-400 text-xs mb-1">
             <span>Total Users</span>
             <Users className="w-4 h-4 text-emerald-400" />
           </div>
-          <p className="text-xl font-bold text-white">{totalExplorers}</p>
-          <span className="text-[11px] text-neutral-400">Database profiles</span>
+          <p className="text-lg sm:text-xl font-bold text-white">{totalExplorers}</p>
+          <span className="text-[10px] sm:text-[11px] text-neutral-400 block truncate">Database profiles</span>
         </div>
 
-        <div className="p-3.5 bg-neutral-900 border border-neutral-800 rounded-2xl">
+        <div className="p-3 sm:p-3.5 bg-neutral-900 border border-neutral-800 rounded-2xl min-w-0">
           <div className="flex items-center justify-between text-neutral-400 text-xs mb-1">
             <span>Quests Done</span>
             <CheckCircle className="w-4 h-4 text-teal-400" />
           </div>
-          <p className="text-xl font-bold text-white">{totalTasksCompleted}</p>
-          <span className="text-[11px] text-neutral-400">Total completed</span>
+          <p className="text-lg sm:text-xl font-bold text-white">{totalTasksCompleted}</p>
+          <span className="text-[10px] sm:text-[11px] text-neutral-400 block truncate">Total completed</span>
         </div>
 
-        <div className="p-3.5 bg-neutral-900 border border-neutral-800 rounded-2xl">
+        <div className="p-3 sm:p-3.5 bg-neutral-900 border border-neutral-800 rounded-2xl min-w-0">
           <div className="flex items-center justify-between text-neutral-400 text-xs mb-1">
             <span>Average Score</span>
             <Award className="w-4 h-4 text-amber-400" />
           </div>
-          <p className="text-xl font-bold text-white">{avgAuthenticity}%</p>
-          <span className="text-[11px] text-emerald-400 font-medium">Clarity score</span>
+          <p className="text-lg sm:text-xl font-bold text-white">{avgAuthenticity}%</p>
+          <span className="text-[10px] sm:text-[11px] text-emerald-400 font-medium block truncate">Clarity score</span>
         </div>
 
-        <div className="p-3.5 bg-neutral-900 border border-neutral-800 rounded-2xl">
+        <div className="p-3 sm:p-3.5 bg-neutral-900 border border-neutral-800 rounded-2xl min-w-0">
           <div className="flex items-center justify-between text-neutral-400 text-xs mb-1">
             <span>Camera AI</span>
             <Eye className="w-4 h-4 text-sky-400" />
           </div>
-          <p className="text-base font-bold text-emerald-400 mt-0.5">Online</p>
-          <span className="text-[11px] text-neutral-400">Vision active</span>
+          <p className="text-base sm:text-lg font-bold text-emerald-400 mt-0.5">Online</p>
+          <span className="text-[10px] sm:text-[11px] text-neutral-400 block truncate">Vision active</span>
         </div>
       </div>
 
@@ -363,8 +363,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
               No explorer profiles found matching your query.
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
+            <div className="overflow-x-auto w-full">
+              <table className="w-full text-left text-xs min-w-[580px]">
                 <thead>
                   <tr className="border-b border-neutral-800 text-neutral-400">
                     <th className="pb-3 font-semibold">Explorer</th>

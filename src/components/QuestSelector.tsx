@@ -8,19 +8,22 @@ import {
   CloudSun,
   Plus,
   Check,
+  CheckCircle2,
   Sparkles,
   Trophy,
 } from 'lucide-react';
-import { Quest, JournalEntry } from '../types/nature';
+import { Quest, JournalEntry, CompletedQuestRecord } from '../types/nature';
 import { ChallengesPanel } from './ChallengesPanel';
+import { RepeatQuestModal } from './RepeatQuestModal';
 import { playQuestAcceptSound } from '../utils/audio';
 
 interface QuestSelectorProps {
   quests: Quest[];
   currentQuest: Quest;
-  onSelectQuest: (quest: Quest) => void;
+  onSelectQuest: (quest: Quest, isRepeat?: boolean) => void;
   onAddCustomQuest: (target: string, title: string) => void;
   journalEntries?: JournalEntry[];
+  completedQuestsMap?: Record<string, CompletedQuestRecord>;
 }
 
 export const QuestSelector: React.FC<QuestSelectorProps> = ({
@@ -29,12 +32,43 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
   onSelectQuest,
   onAddCustomQuest,
   journalEntries = [],
+  completedQuestsMap = {},
 }) => {
   const [viewMode, setViewMode] = useState<'quests' | 'challenges'>('quests');
   const [filter, setFilter] = useState<string>('all');
   const [isCreatingCustom, setIsCreatingCustom] = useState<boolean>(false);
   const [customTarget, setCustomTarget] = useState<string>('');
   const [customTitle, setCustomTitle] = useState<string>('');
+
+  // Repeat confirmation modal state
+  const [repeatModalQuest, setRepeatModalQuest] = useState<Quest | null>(null);
+  const [repeatModalRecord, setRepeatModalRecord] = useState<CompletedQuestRecord | null>(null);
+
+  const getCompletionInfo = (quest: Quest): { isCompleted: boolean; count: number; record: CompletedQuestRecord | null } => {
+    const record =
+      completedQuestsMap[quest.id] ||
+      completedQuestsMap[quest.target.toLowerCase().trim()] ||
+      null;
+
+    const journalCount = journalEntries.filter(
+      (e) =>
+        e.questTarget.toLowerCase().trim() === quest.target.toLowerCase().trim() ||
+        e.questTitle.toLowerCase().trim() === quest.title.toLowerCase().trim()
+    ).length;
+
+    const count = Math.max(record?.count || 0, journalCount);
+    return {
+      isCompleted: count > 0,
+      count,
+      record: record || (count > 0 ? {
+        questId: quest.id,
+        questTarget: quest.target,
+        count,
+        firstCompletedAt: Date.now(),
+        lastCompletedAt: Date.now(),
+      } : null),
+    };
+  };
 
   const getQuestIcon = (iconName: string) => {
     switch (iconName) {
@@ -53,9 +87,32 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
     }
   };
 
-  const handleSelect = (q: Quest) => {
-    playQuestAcceptSound();
-    onSelectQuest(q);
+  const handleQuestCardClick = (q: Quest) => {
+    const { isCompleted, count, record } = getCompletionInfo(q);
+
+    if (isCompleted) {
+      // Quest already completed: ask permission before starting a repeat run!
+      setRepeatModalQuest(q);
+      setRepeatModalRecord(record);
+    } else {
+      // First time completing: select immediately
+      playQuestAcceptSound();
+      onSelectQuest(q, false);
+    }
+  };
+
+  const handleConfirmRepeat = () => {
+    if (repeatModalQuest) {
+      playQuestAcceptSound();
+      onSelectQuest(repeatModalQuest, true);
+      setRepeatModalQuest(null);
+      setRepeatModalRecord(null);
+    }
+  };
+
+  const handleCancelRepeat = () => {
+    setRepeatModalQuest(null);
+    setRepeatModalRecord(null);
   };
 
   const handleCreateCustom = (e: React.FormEvent) => {
@@ -69,19 +126,24 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
     playQuestAcceptSound();
   };
 
+  const completedQuestsTotal = quests.filter((q) => getCompletionInfo(q).isCompleted).length;
+
   const filteredQuests = quests.filter((q) => {
     if (filter === 'all') return true;
+    if (filter === 'completed') {
+      return getCompletionInfo(q).isCompleted;
+    }
     return q.category === filter;
   });
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3.5 sm:space-y-4 w-full">
       {/* Top View Mode Switcher: Quests vs Challenges */}
-      <div className="flex flex-wrap items-center justify-between gap-3 pb-1 border-b border-neutral-900">
-        <div className="flex p-1 bg-neutral-900 rounded-xl border border-neutral-800 text-xs font-bold">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pb-1 border-b border-neutral-900 w-full">
+        <div className="flex p-1 bg-neutral-900 rounded-xl border border-neutral-800 text-xs font-bold w-full sm:w-auto">
           <button
             onClick={() => setViewMode('quests')}
-            className={`px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
+            className={`flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg transition flex items-center justify-center gap-1.5 cursor-pointer ${
               viewMode === 'quests'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-neutral-400 hover:text-white'
@@ -93,7 +155,7 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
 
           <button
             onClick={() => setViewMode('challenges')}
-            className={`px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
+            className={`flex-1 sm:flex-none px-3.5 py-1.5 rounded-lg transition flex items-center justify-center gap-1.5 cursor-pointer ${
               viewMode === 'challenges'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-neutral-400 hover:text-white'
@@ -107,7 +169,7 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
         {viewMode === 'quests' && (
           <button
             onClick={() => setIsCreatingCustom(!isCreatingCustom)}
-            className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-emerald-400 border border-neutral-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+            className="w-full sm:w-auto px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-emerald-400 border border-neutral-800 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>+ Custom Quest</span>
@@ -120,23 +182,24 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
         <ChallengesPanel
           journalEntries={journalEntries}
           quests={quests}
-          onSelectQuestForChallenge={handleSelect}
+          onSelectQuestForChallenge={(q) => handleQuestCardClick(q)}
         />
       ) : (
         <>
-          {/* Category Filter for Quests */}
-          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-neutral-900 rounded-xl border border-neutral-800 text-xs font-medium">
+          {/* Category Filter for Quests (Swipeable on mobile, no layout breakage) */}
+          <div className="flex items-center gap-1.5 p-1 bg-neutral-900 rounded-xl border border-neutral-800 text-xs font-medium overflow-x-auto no-scrollbar w-full">
             {[
               { id: 'all', label: `All (${quests.length})` },
-              { id: 'forest', label: '🌲 Trees & Woods' },
+              { id: 'completed', label: `✓ Done (${completedQuestsTotal})` },
+              { id: 'forest', label: '🌲 Woods' },
               { id: 'water_sky', label: '🌊 Water & Sky' },
-              { id: 'meadow', label: '🌼 Flowers & Meadow' },
-              { id: 'micro_nature', label: '🔍 Tiny Finds' },
+              { id: 'meadow', label: '🌼 Meadow' },
+              { id: 'micro_nature', label: '🔍 Tiny' },
             ].map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setFilter(cat.id)}
-                className={`px-2.5 py-1.5 rounded-lg transition cursor-pointer ${
+                className={`px-2.5 py-1.5 rounded-lg transition cursor-pointer shrink-0 text-[11px] sm:text-xs ${
                   filter === cat.id
                     ? 'bg-emerald-600 text-white font-semibold shadow-sm'
                     : 'text-neutral-400 hover:text-white'
@@ -151,9 +214,9 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
           {isCreatingCustom && (
             <form
               onSubmit={handleCreateCustom}
-              className="p-4 bg-neutral-900 border border-emerald-900/60 rounded-2xl space-y-3"
+              className="p-3.5 sm:p-4 bg-neutral-900 border border-emerald-900/60 rounded-2xl space-y-3 w-full"
             >
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                 <h4 className="text-sm font-bold text-white flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-emerald-400" />
                   <span>Create a Custom Quest</span>
@@ -163,7 +226,7 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
                 <div>
                   <label className="block text-xs font-medium text-neutral-300 mb-1">
                     What to find (Required)
@@ -210,47 +273,62 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
           )}
 
           {/* Quest Cards Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 w-full">
             {filteredQuests.map((quest) => {
               const isSelected = quest.id === currentQuest.id;
+              const { isCompleted, count } = getCompletionInfo(quest);
+
               return (
                 <button
                   key={quest.id}
-                  onClick={() => handleSelect(quest)}
-                  className={`text-left p-3.5 rounded-2xl border transition relative flex flex-col justify-between group cursor-pointer ${
+                  onClick={() => handleQuestCardClick(quest)}
+                  className={`text-left p-3 sm:p-3.5 rounded-2xl border transition relative flex flex-col justify-between group cursor-pointer w-full ${
                     isSelected
                       ? 'bg-neutral-900 border-emerald-500 shadow-md ring-1 ring-emerald-500'
+                      : isCompleted
+                      ? 'bg-neutral-900/90 hover:bg-neutral-900 border-emerald-900/60 hover:border-emerald-700/80'
                       : 'bg-neutral-900/80 hover:bg-neutral-900 border-neutral-800 hover:border-neutral-700'
                   }`}
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-2.5">
-                      <div className="w-9 h-9 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-center">
+                    <div className="flex items-center justify-between mb-2.5 gap-2">
+                      <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-center shrink-0">
                         {getQuestIcon(quest.iconName)}
                       </div>
-                      {isSelected ? (
-                        <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 bg-emerald-950/60 border border-emerald-800/80 px-2 py-0.5 rounded-full">
-                          <Check className="w-3.5 h-3.5" />
-                          Selected
-                        </span>
-                      ) : (
-                        <span
-                          className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
-                            quest.difficulty === 'easy'
-                              ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-900'
-                              : quest.difficulty === 'medium'
-                              ? 'bg-amber-950/60 text-amber-300 border border-amber-900'
-                              : 'bg-purple-950/60 text-purple-300 border border-purple-900'
-                          }`}
-                        >
-                          {quest.difficulty}
-                        </span>
-                      )}
+
+                      <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                        {isCompleted && (
+                          <span className="text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800/80 px-2 py-0.5 rounded-full flex items-center gap-1 shadow-xs shrink-0">
+                            <Check className="w-3 h-3 text-emerald-400" />
+                            <span>Done {count > 1 ? `(${count}x)` : ''}</span>
+                          </span>
+                        )}
+
+                        {isSelected ? (
+                          <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 bg-emerald-950/60 border border-emerald-800/80 px-2 py-0.5 rounded-full shrink-0">
+                            Active
+                          </span>
+                        ) : (
+                          <span
+                            className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full shrink-0 ${
+                              quest.difficulty === 'easy'
+                                ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-900'
+                                : quest.difficulty === 'medium'
+                                ? 'bg-amber-950/60 text-amber-300 border border-amber-900'
+                                : 'bg-purple-950/60 text-purple-300 border border-purple-900'
+                            }`}
+                          >
+                            {quest.difficulty}
+                          </span>
+                        )}
+                      </div>
                     </div>
 
-                    <h4 className="text-sm font-bold text-white mb-1 group-hover:text-emerald-300 transition-colors">
-                      {quest.title}
-                    </h4>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <h4 className="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors line-clamp-1">
+                        {quest.title}
+                      </h4>
+                    </div>
                     <p className="text-xs text-neutral-400 line-clamp-2 leading-relaxed">
                       {quest.description}
                     </p>
@@ -267,6 +345,15 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
           </div>
         </>
       )}
+
+      {/* Repeat Completed Quest Confirmation Permission Modal */}
+      <RepeatQuestModal
+        isOpen={Boolean(repeatModalQuest)}
+        quest={repeatModalQuest}
+        completionRecord={repeatModalRecord}
+        onConfirm={handleConfirmRepeat}
+        onCancel={handleCancelRepeat}
+      />
     </div>
   );
 };
