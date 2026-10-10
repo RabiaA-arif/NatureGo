@@ -85,17 +85,17 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-bold text-white">
-                {tab === 'user' ? 'Explorer Sign In' : 'Nature Admin Access'}
+                {tab === 'user' ? 'Log In' : 'Admin Access'}
               </h3>
               <p className="text-xs text-neutral-400">
-                {tab === 'user' ? 'Save discoveries & sync progress in database' : 'Administrative dashboard & verification audit'}
+                {tab === 'user' ? 'Save discoveries and keep your streak' : 'Admin management'}
               </p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 text-neutral-400 hover:text-white rounded-xl hover:bg-neutral-800 transition"
+            className="p-2 text-neutral-400 hover:text-white rounded-xl hover:bg-neutral-800 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -107,26 +107,26 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <button
               type="button"
               onClick={() => { setTab('user'); setErrorNotice(null); }}
-              className={`py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${
+              className={`py-2 rounded-lg transition flex items-center justify-center gap-1.5 cursor-pointer ${
                 tab === 'user'
                   ? 'bg-emerald-600 text-white shadow-sm'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
               <User className="w-3.5 h-3.5" />
-              <span>Explorer User</span>
+              <span>User</span>
             </button>
             <button
               type="button"
               onClick={() => { setTab('admin'); setErrorNotice(null); }}
-              className={`py-2 rounded-lg transition flex items-center justify-center gap-1.5 ${
+              className={`py-2 rounded-lg transition flex items-center justify-center gap-1.5 cursor-pointer ${
                 tab === 'admin'
                   ? 'bg-emerald-600 text-white shadow-sm'
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Nature Admin</span>
+              <span>Admin</span>
             </button>
           </div>
         </div>

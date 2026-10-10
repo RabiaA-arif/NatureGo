@@ -48,14 +48,14 @@ export const FieldJournal: React.FC<FieldJournalProps> = ({
   return (
     <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 sm:p-6 space-y-6">
       {/* Journal Header with Stats */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-neutral-800">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-neutral-800">
         <div>
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-lg font-bold text-white">Explorer Field Journal</h3>
+            <h3 className="text-lg font-bold text-white">My Nature Log</h3>
           </div>
           <p className="text-xs text-neutral-400 mt-0.5">
-            Verified authentic outdoor discoveries and naturalist achievements
+            Your saved nature discoveries and badges
           </p>
         </div>
 
@@ -70,7 +70,7 @@ export const FieldJournal: React.FC<FieldJournalProps> = ({
                   : 'text-neutral-400 hover:text-white'
               }`}
             >
-              Discoveries ({entries.length})
+              Saved Finds ({entries.length})
             </button>
             <button
               onClick={() => setActiveTab('badges')}
@@ -91,7 +91,7 @@ export const FieldJournal: React.FC<FieldJournalProps> = ({
             <button
               onClick={onClearJournal}
               title="Clear journal entries"
-              className="p-2 text-neutral-500 hover:text-rose-400 hover:bg-neutral-800 rounded-lg transition"
+              className="p-2 text-neutral-500 hover:text-rose-400 hover:bg-neutral-800 rounded-lg transition cursor-pointer"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -103,15 +103,15 @@ export const FieldJournal: React.FC<FieldJournalProps> = ({
       {activeTab === 'entries' && (
         <>
           {entries.length === 0 ? (
-            <div className="text-center py-12 px-4">
-              <div className="w-14 h-14 mx-auto rounded-2xl bg-neutral-950 border border-neutral-800 flex items-center justify-center text-neutral-500 mb-3">
-                <BookOpen className="w-7 h-7" />
+            <div className="text-center py-10 px-4">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-neutral-950 border border-neutral-800 flex items-center justify-center text-neutral-500 mb-2.5">
+                <BookOpen className="w-6 h-6" />
               </div>
-              <h4 className="text-base font-bold text-white mb-1">
-                Your Field Journal is Empty
+              <h4 className="text-sm font-bold text-white mb-1">
+                No Saved Finds Yet
               </h4>
-              <p className="text-xs text-neutral-400 max-w-sm mx-auto mb-4">
-                Head outside, choose a nature quest, and capture genuine wild flora, fauna, soil, and sky to earn field guide entries!
+              <p className="text-xs text-neutral-400 max-w-xs mx-auto">
+                Go outside, pick a quest, snap a photo, and save it to your log!
               </p>
             </div>
           ) : (

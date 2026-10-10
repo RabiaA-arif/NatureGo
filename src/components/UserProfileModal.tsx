@@ -232,7 +232,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400">
-                      Daily Nature Streak
+                      Daily Streak
                     </span>
                     <span className="text-neutral-500">·</span>
                     <span className="text-xs text-neutral-400 flex items-center gap-1">
@@ -243,7 +243,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   <h4 className="text-2xl font-black text-white mt-0.5 flex items-baseline gap-2">
                     <span>{streakDays}</span>
                     <span className="text-sm font-semibold text-neutral-300">
-                      {streakDays === 1 ? 'consecutive day' : 'consecutive days'}
+                      {streakDays === 1 ? 'day streak' : 'days streak'}
                     </span>
                   </h4>
                 </div>
@@ -262,7 +262,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 {isCompletedToday ? (
                   <>
                     <CheckCircle className="w-3.5 h-3.5" />
-                    <span>Completed Today!</span>
+                    <span>Done Today!</span>
                   </>
                 ) : streakDays > 0 ? (
                   <>
@@ -272,28 +272,28 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 ) : (
                   <>
                     <Compass className="w-3.5 h-3.5" />
-                    <span>Ready to Start</span>
+                    <span>Start Today</span>
                   </>
                 )}
               </div>
             </div>
 
             {/* Streak Status Tip Message */}
-            <p className="text-xs text-neutral-300 mb-3.5 leading-relaxed bg-neutral-950/60 p-2.5 rounded-xl border border-neutral-800/60">
+            <p className="text-xs text-neutral-300 mb-3 leading-relaxed bg-neutral-950/60 p-2.5 rounded-xl border border-neutral-800/60">
               {isCompletedToday ? (
                 <span className="text-emerald-300 font-medium">
-                  ✓ Outstanding! You completed a nature quest today. Come back tomorrow to keep the flame burning!
+                  ✓ Great job! You completed a quest today. Come back tomorrow to keep it going!
                 </span>
               ) : streakDays > 0 ? (
                 <span className="text-amber-300 font-medium flex items-center gap-1.5">
                   <AlertCircle className="w-4 h-4 shrink-0" />
                   <span>
-                    Your streak is at stake! Complete at least one outdoor quest today to extend it to {streakDays + 1} days.
+                    Complete at least 1 quest today to reach {streakDays + 1} days!
                   </span>
                 </span>
               ) : (
                 <span className="text-neutral-400">
-                  Head outside and verify your first natural discovery today to begin your daily outdoor streak!
+                  Head outside and complete your first quest to start your daily streak!
                 </span>
               )}
             </p>
@@ -304,7 +304,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                 <div className="flex items-center gap-2">
                   <BarChart3 className="w-4 h-4 text-emerald-400" />
                   <span className="text-xs font-bold text-white">
-                    7-Day Streak & Quest Activity
+                    Past 7 Days
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-[11px]">
@@ -316,7 +316,7 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
                   </span>
                   <span className="text-neutral-600">·</span>
                   <span className="text-neutral-400">
-                    Weekly Quests:{' '}
+                    Quests:{' '}
                     <strong className="text-white font-bold">
                       {totalWeeklyQuests}
                     </strong>

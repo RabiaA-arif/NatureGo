@@ -81,36 +81,36 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
         <div className="flex p-1 bg-neutral-900 rounded-xl border border-neutral-800 text-xs font-bold">
           <button
             onClick={() => setViewMode('quests')}
-            className={`px-4 py-2 rounded-lg transition flex items-center gap-2 cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
               viewMode === 'quests'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
             <Compass className="w-3.5 h-3.5" />
-            <span>Outdoor Quests Catalog ({quests.length})</span>
+            <span>Quests ({quests.length})</span>
           </button>
 
           <button
             onClick={() => setViewMode('challenges')}
-            className={`px-4 py-2 rounded-lg transition flex items-center gap-2 cursor-pointer ${
+            className={`px-3.5 py-1.5 rounded-lg transition flex items-center gap-1.5 cursor-pointer ${
               viewMode === 'challenges'
                 ? 'bg-emerald-600 text-white shadow-sm'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >
             <Trophy className="w-3.5 h-3.5 text-amber-300" />
-            <span>Expedition Challenges (8)</span>
+            <span>Challenges (8)</span>
           </button>
         </div>
 
         {viewMode === 'quests' && (
           <button
             onClick={() => setIsCreatingCustom(!isCreatingCustom)}
-            className="px-3.5 py-2 bg-neutral-900 hover:bg-neutral-800 text-emerald-400 border border-neutral-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+            className="px-3 py-1.5 bg-neutral-900 hover:bg-neutral-800 text-emerald-400 border border-neutral-800 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
-            <span>Create Custom Target</span>
+            <Plus className="w-3.5 h-3.5" />
+            <span>+ Custom Quest</span>
           </button>
         )}
       </div>
@@ -125,20 +125,20 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
       ) : (
         <>
           {/* Category Filter for Quests */}
-          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-neutral-900 rounded-xl border border-neutral-800 text-xs font-semibold">
+          <div className="flex flex-wrap items-center gap-1.5 p-1 bg-neutral-900 rounded-xl border border-neutral-800 text-xs font-medium">
             {[
-              { id: 'all', label: `All Biomes (${quests.length})` },
-              { id: 'forest', label: '🌲 Forest' },
+              { id: 'all', label: `All (${quests.length})` },
+              { id: 'forest', label: '🌲 Trees & Woods' },
               { id: 'water_sky', label: '🌊 Water & Sky' },
-              { id: 'meadow', label: '🌼 Meadow' },
-              { id: 'micro_nature', label: '🔬 Micro Nature' },
+              { id: 'meadow', label: '🌼 Flowers & Meadow' },
+              { id: 'micro_nature', label: '🔍 Tiny Finds' },
             ].map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => setFilter(cat.id)}
-                className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
+                className={`px-2.5 py-1.5 rounded-lg transition cursor-pointer ${
                   filter === cat.id
-                    ? 'bg-emerald-600 text-white shadow-sm'
+                    ? 'bg-emerald-600 text-white font-semibold shadow-sm'
                     : 'text-neutral-400 hover:text-white'
                 }`}
               >
@@ -151,30 +151,30 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
           {isCreatingCustom && (
             <form
               onSubmit={handleCreateCustom}
-              className="p-5 bg-neutral-900 border border-emerald-900/60 rounded-2xl space-y-3"
+              className="p-4 bg-neutral-900 border border-emerald-900/60 rounded-2xl space-y-3"
             >
               <div className="flex items-center justify-between">
                 <h4 className="text-sm font-bold text-white flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-emerald-400" />
-                  <span>Design Your Own Outdoor Quest</span>
+                  <span>Create a Custom Quest</span>
                 </h4>
                 <span className="text-xs text-neutral-400">
-                  Our Vision AI evaluates any physical outdoor natural object
+                  Type any natural outdoor item to find
                 </span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-medium text-neutral-300 mb-1">
-                    Target Object or Scene (Required)
+                    What to find (Required)
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. acorn, dandelion seed head, wild bird feather, mossy rock"
+                    placeholder="e.g. dandelion, acorn, bird feather, mossy stone"
                     value={customTarget}
                     onChange={(e) => setCustomTarget(e.target.value)}
                     required
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
                 <div>
@@ -183,10 +183,10 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. The Acorn Hunter"
+                    placeholder="e.g. Acorn Hunt"
                     value={customTitle}
                     onChange={(e) => setCustomTitle(e.target.value)}
-                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-neutral-950 border border-neutral-800 rounded-xl px-3 py-2 text-xs text-white placeholder-neutral-500 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -201,9 +201,9 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer"
+                  className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer"
                 >
-                  Start This Quest Now
+                  Start This Quest
                 </button>
               </div>
             </form>
@@ -217,25 +217,25 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
                 <button
                   key={quest.id}
                   onClick={() => handleSelect(quest)}
-                  className={`text-left p-4 rounded-2xl border transition relative flex flex-col justify-between group cursor-pointer ${
+                  className={`text-left p-3.5 rounded-2xl border transition relative flex flex-col justify-between group cursor-pointer ${
                     isSelected
                       ? 'bg-neutral-900 border-emerald-500 shadow-md ring-1 ring-emerald-500'
                       : 'bg-neutral-900/80 hover:bg-neutral-900 border-neutral-800 hover:border-neutral-700'
                   }`}
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-center">
+                    <div className="flex items-center justify-between mb-2.5">
+                      <div className="w-9 h-9 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-center">
                         {getQuestIcon(quest.iconName)}
                       </div>
                       {isSelected ? (
-                        <span className="text-xs font-bold text-emerald-400 flex items-center gap-1">
-                          <Check className="w-4 h-4" />
-                          Active Quest
+                        <span className="text-xs font-bold text-emerald-400 flex items-center gap-1 bg-emerald-950/60 border border-emerald-800/80 px-2 py-0.5 rounded-full">
+                          <Check className="w-3.5 h-3.5" />
+                          Selected
                         </span>
                       ) : (
                         <span
-                          className={`text-[10px] font-bold uppercase px-1.5 py-0.5 rounded ${
+                          className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${
                             quest.difficulty === 'easy'
                               ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-900'
                               : quest.difficulty === 'medium'
@@ -251,16 +251,13 @@ export const QuestSelector: React.FC<QuestSelectorProps> = ({
                     <h4 className="text-sm font-bold text-white mb-1 group-hover:text-emerald-300 transition-colors">
                       {quest.title}
                     </h4>
-                    <p className="text-xs text-emerald-400 font-semibold mb-1.5 truncate">
-                      Target: {quest.target}
-                    </p>
                     <p className="text-xs text-neutral-400 line-clamp-2 leading-relaxed">
                       {quest.description}
                     </p>
                   </div>
 
                   {quest.hints && quest.hints.length > 0 && (
-                    <div className="mt-3 pt-2.5 border-t border-neutral-800/80 text-[11px] text-neutral-400 line-clamp-1">
+                    <div className="mt-2.5 pt-2 border-t border-neutral-800/80 text-[11px] text-neutral-400 line-clamp-1">
                       💡 {quest.hints[0]}
                     </div>
                   )}

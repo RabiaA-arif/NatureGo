@@ -129,29 +129,29 @@ export const ChallengesPanel: React.FC<ChallengesPanelProps> = ({
     <div className="space-y-4">
       {/* Challenges Overview Banner */}
       <div className="bg-gradient-to-r from-emerald-950/70 via-neutral-900 to-teal-950/70 border border-emerald-800/60 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center shrink-0">
-            <Trophy className="w-6 h-6 animate-pulse" />
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center shrink-0">
+            <Trophy className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-base font-bold text-white">
-                Expedition Challenges & Multi-Quests
+                Nature Challenges
               </h3>
               <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-950 text-amber-300 border border-amber-800/80 px-2 py-0.5 rounded-full">
-                {completedCount} of {evaluatedChallenges.length} Unlocked
+                {completedCount} of {evaluatedChallenges.length} Done
               </span>
             </div>
             <p className="text-xs text-neutral-400 mt-0.5">
-              Complete special naturalist milestones to earn bonus explorer XP and exclusive expedition titles
+              Complete fun challenge goals to earn badges and XP!
             </p>
           </div>
         </div>
 
         {/* Global Progress Bar */}
-        <div className="w-full sm:w-48 bg-neutral-950 p-2.5 rounded-xl border border-neutral-800 shrink-0">
-          <div className="flex items-center justify-between text-[11px] mb-1.5 font-semibold">
-            <span className="text-neutral-400">Total Completion</span>
+        <div className="w-full sm:w-44 bg-neutral-950 p-2.5 rounded-xl border border-neutral-800 shrink-0">
+          <div className="flex items-center justify-between text-[11px] mb-1 font-semibold">
+            <span className="text-neutral-400">Progress</span>
             <span className="text-emerald-400">
               {Math.round((completedCount / evaluatedChallenges.length) * 100)}%
             </span>
@@ -168,20 +168,20 @@ export const ChallengesPanel: React.FC<ChallengesPanelProps> = ({
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex flex-wrap items-center gap-1.5 p-1 bg-neutral-900 rounded-xl border border-neutral-800 text-xs font-semibold">
+      <div className="flex flex-wrap items-center gap-1.5 p-1 bg-neutral-900 rounded-xl border border-neutral-800 text-xs font-medium">
         {[
-          { id: 'all', label: `All Challenges (${evaluatedChallenges.length})` },
-          { id: 'biome', label: 'Biome Expeditions' },
-          { id: 'daily', label: 'Daily Sprints' },
-          { id: 'mastery', label: 'Mastery & Anti-Spoof' },
-          { id: 'special', label: 'Forager Special' },
+          { id: 'all', label: `All (${evaluatedChallenges.length})` },
+          { id: 'biome', label: 'Nature Sets' },
+          { id: 'daily', label: 'Daily' },
+          { id: 'mastery', label: 'Mastery' },
+          { id: 'special', label: 'Special' },
         ].map((tab) => (
           <button
             key={tab.id}
             onClick={() => setFilter(tab.id as any)}
             className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${
               filter === tab.id
-                ? 'bg-emerald-600 text-white shadow-sm'
+                ? 'bg-emerald-600 text-white font-semibold shadow-sm'
                 : 'text-neutral-400 hover:text-white'
             }`}
           >

@@ -32,8 +32,8 @@ import { playChimeSuccess, playChimeReject } from './utils/audio';
 const INITIAL_BADGES: Badge[] = [
   {
     id: 'first_find',
-    name: 'First Sprout',
-    description: 'Verify your first genuine outdoor discovery in the wild.',
+    name: 'First Find',
+    description: 'Find your very first nature item outside.',
     icon: '🌱',
     unlocked: false,
     targetCount: 1,
@@ -41,8 +41,8 @@ const INITIAL_BADGES: Badge[] = [
   },
   {
     id: 'woodland_scout',
-    name: 'Woodland Scout',
-    description: 'Discover 3 different forest treasures (leaves, bark, pinecones).',
+    name: 'Forest Scout',
+    description: 'Find 3 forest items (leaf, bark, or pinecone).',
     icon: '🌲',
     unlocked: false,
     targetCount: 3,
@@ -50,8 +50,8 @@ const INITIAL_BADGES: Badge[] = [
   },
   {
     id: 'elemental_seeker',
-    name: 'Sky & Stream Seeker',
-    description: 'Capture authentic outdoor water or open atmospheric skies.',
+    name: 'Water & Sky',
+    description: 'Find 2 water or open sky items.',
     icon: '🌊',
     unlocked: false,
     targetCount: 2,
@@ -59,8 +59,8 @@ const INITIAL_BADGES: Badge[] = [
   },
   {
     id: 'anti_spoof_master',
-    name: 'Wilderness Pure',
-    description: 'Pass 3 consecutive anti-spoof checks with >85% confidence score.',
+    name: 'Clear Daylight',
+    description: 'Take 3 verified nature photos in natural outdoor light.',
     icon: '🛡️',
     unlocked: false,
     targetCount: 3,
@@ -68,8 +68,8 @@ const INITIAL_BADGES: Badge[] = [
   },
   {
     id: 'master_naturalist',
-    name: 'Master Naturalist',
-    description: 'Record 5 or more verified natural species in your Field Journal.',
+    name: 'Nature Explorer',
+    description: 'Save 5 verified finds to your journal.',
     icon: '🧭',
     unlocked: false,
     targetCount: 5,
@@ -313,25 +313,25 @@ function NatureGoContent() {
                   Nature Go
                 </h1>
                 <span className="text-xs text-emerald-400 font-medium hidden sm:inline">
-                  · Outdoor Vision Intelligence
+                  · Outdoor Explorer
                 </span>
               </div>
               <p className="text-xs text-neutral-400">
-                Screen-free outdoor exploration & authentic nature quests
+                Explore outdoors, snap nature, and keep your daily streak!
               </p>
             </div>
           </div>
 
           {/* User Profile / Admin / Login Controls */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Screen-Free Mode Launcher */}
+            {/* Audio Walk Launcher */}
             <button
               onClick={() => setIsScreenFreeMode(true)}
-              className="px-3.5 py-2 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 rounded-xl text-xs font-bold flex items-center gap-2 transition cursor-pointer"
-              title="Put phone in pocket and explore with voice directions"
+              className="px-3.5 py-2 bg-neutral-900 hover:bg-neutral-800 border border-neutral-800 text-neutral-200 rounded-xl text-xs font-semibold flex items-center gap-2 transition cursor-pointer"
+              title="Walk with audio clues in your pocket"
             >
               <Headphones className="w-4 h-4 text-emerald-400" />
-              <span className="hidden sm:inline">Pocket Walk</span>
+              <span className="hidden sm:inline">Audio Walk</span>
             </button>
 
             {/* Admin Dashboard shortcut if admin */}
@@ -345,7 +345,7 @@ function NatureGoContent() {
                 }`}
               >
                 <ShieldCheck className="w-4 h-4" />
-                <span className="hidden sm:inline">Admin Dashboard</span>
+                <span className="hidden sm:inline">Admin</span>
               </button>
             )}
 
@@ -369,7 +369,7 @@ function NatureGoContent() {
                     </span>
                     <span className="text-neutral-500">·</span>
                     <span className="text-emerald-400 font-medium">
-                      {userProfile.totalQuestsCompleted || journalEntries.length} done
+                      {userProfile.totalQuestsCompleted || journalEntries.length} found
                     </span>
                   </div>
                 </div>
@@ -381,12 +381,12 @@ function NatureGoContent() {
                   className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition cursor-pointer shadow-sm"
                 >
                   <LogIn className="w-3.5 h-3.5" />
-                  <span>Explorer Login</span>
+                  <span>Log In</span>
                 </button>
                 <button
                   onClick={() => { setAuthModalTab('admin'); setIsAuthModalOpen(true); }}
                   className="p-2 bg-neutral-900 hover:bg-neutral-800 text-neutral-400 hover:text-emerald-400 rounded-xl border border-neutral-800 transition"
-                  title="Admin Sign In"
+                  title="Admin Log In"
                 >
                   <ShieldCheck className="w-4 h-4" />
                 </button>
@@ -406,7 +406,7 @@ function NatureGoContent() {
             }`}
           >
             <Camera className="w-4 h-4" />
-            <span>Expedition Camera</span>
+            <span>Camera</span>
           </button>
           <button
             onClick={() => setActiveTab('quests')}
@@ -417,7 +417,7 @@ function NatureGoContent() {
             }`}
           >
             <Compass className="w-4 h-4" />
-            <span>Quests & Challenges ({quests.length})</span>
+            <span>Quests</span>
           </button>
           <button
             onClick={() => setActiveTab('journal')}
@@ -428,7 +428,7 @@ function NatureGoContent() {
             }`}
           >
             <Award className="w-4 h-4" />
-            <span>Field Journal & Badges ({journalEntries.length})</span>
+            <span>My Journal ({journalEntries.length})</span>
           </button>
           {isAdmin && (
             <button
@@ -440,97 +440,81 @@ function NatureGoContent() {
               }`}
             >
               <Sliders className="w-4 h-4" />
-              <span>Admin Management</span>
+              <span>Admin</span>
             </button>
           )}
         </div>
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 space-y-6">
-        {/* Onboarding Guide */}
+      <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 space-y-5">
+        {/* Quick 3-Step Guide for New Users */}
         {showHowItWorks && activeTab !== 'admin' && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 sm:p-5 relative transition">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 relative transition">
             <button
               onClick={() => setShowHowItWorks(false)}
-              className="absolute top-3.5 right-3.5 p-1 text-neutral-400 hover:text-white rounded-lg transition"
+              className="absolute top-3 right-3 p-1 text-neutral-400 hover:text-white rounded-lg transition cursor-pointer"
               title="Close guide"
             >
               <X className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
-                Welcome to Nature Go
+            <div className="flex items-center gap-2 mb-2.5">
+              <span className="text-xs font-bold text-emerald-400">
+                How It Works:
               </span>
-              <span className="text-neutral-500">·</span>
-              <span className="text-xs text-neutral-400">
-                Log in to sync discoveries to the database, or explore immediately
+              <span className="text-xs text-neutral-400 hidden sm:inline">
+                Find real nature outside in 3 easy steps
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-center text-emerald-400 shrink-0 font-bold text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="flex items-center gap-2.5 bg-neutral-950/60 p-2.5 rounded-xl border border-neutral-800/60">
+                <div className="w-7 h-7 rounded-lg bg-emerald-950 border border-emerald-800 text-emerald-400 flex items-center justify-center shrink-0 font-bold text-xs">
                   1
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white mb-0.5">
-                    Pick a Nature Quest
-                  </h4>
-                  <p className="text-xs text-neutral-400 leading-relaxed">
-                    Search for leaves, tree bark, pinecones, water, or open sky in outdoor nature.
-                  </p>
+                  <h4 className="text-xs font-bold text-white">Pick a Quest</h4>
+                  <p className="text-[11px] text-neutral-400">Choose a leaf, flower, or sky item to find.</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-center text-emerald-400 shrink-0 font-bold text-xs">
+              <div className="flex items-center gap-2.5 bg-neutral-950/60 p-2.5 rounded-xl border border-neutral-800/60">
+                <div className="w-7 h-7 rounded-lg bg-emerald-950 border border-emerald-800 text-emerald-400 flex items-center justify-center shrink-0 font-bold text-xs">
                   2
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white mb-0.5">
-                    Snap or Upload a Photo
-                  </h4>
-                  <p className="text-xs text-neutral-400 leading-relaxed">
-                    Capture real live nature. Our Vision AI verifies natural sunlight and rejects screens or fake plastic.
-                  </p>
+                  <h4 className="text-xs font-bold text-white">Snap a Photo</h4>
+                  <p className="text-[11px] text-neutral-400">Take a picture outside in real daylight.</p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-xl bg-neutral-950 border border-neutral-800 flex items-center justify-center text-emerald-400 shrink-0 font-bold text-xs">
+              <div className="flex items-center gap-2.5 bg-neutral-950/60 p-2.5 rounded-xl border border-neutral-800/60">
+                <div className="w-7 h-7 rounded-lg bg-emerald-950 border border-emerald-800 text-emerald-400 flex items-center justify-center shrink-0 font-bold text-xs">
                   3
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white mb-0.5">
-                    Save to Database Profile
-                  </h4>
-                  <p className="text-xs text-neutral-400 leading-relaxed">
-                    Progress, streaks, and verified finds are saved to your profile in Firestore so they are ready next time!
-                  </p>
+                  <h4 className="text-xs font-bold text-white">Save & Streak</h4>
+                  <p className="text-[11px] text-neutral-400">Save finds and grow your daily streak!</p>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Active Quest Bar (Camera view) */}
+        {/* Current Quest Bar (Camera view) */}
         {activeTab === 'camera' && (
-          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-2xl p-3.5 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-emerald-950 border border-emerald-800/80 text-emerald-400 flex items-center justify-center shrink-0">
-                <Compass className="w-6 h-6 animate-pulse" />
+              <div className="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-800/80 text-emerald-400 flex items-center justify-center shrink-0">
+                <Compass className="w-5 h-5" />
               </div>
               <div>
-                <div className="flex items-center gap-2 text-xs">
-                  <span className="font-semibold text-emerald-400">Current Assignment:</span>
-                  <span className="text-white font-bold capitalize">{currentQuest.target}</span>
+                <div className="flex items-center gap-1.5 text-xs">
+                  <span className="text-neutral-400">Current Quest:</span>
+                  <span className="text-emerald-400 font-bold">{currentQuest.title}</span>
                 </div>
-                <h3 className="text-base font-bold text-white mt-0.5">
-                  {currentQuest.title}
-                </h3>
-                <p className="text-xs text-neutral-400 line-clamp-1">
+                <p className="text-xs text-neutral-300 line-clamp-1 mt-0.5">
                   {currentQuest.description}
                 </p>
               </div>
@@ -539,16 +523,16 @@ function NatureGoContent() {
             <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
               <button
                 onClick={() => setActiveTab('quests')}
-                className="px-3.5 py-2 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl text-xs font-semibold transition"
+                className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 rounded-xl text-xs font-semibold transition cursor-pointer"
               >
-                Change Target
+                Change Quest
               </button>
               <button
                 onClick={() => setIsScreenFreeMode(true)}
-                className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm"
+                className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition shadow-sm cursor-pointer"
               >
                 <Headphones className="w-3.5 h-3.5" />
-                <span>Pocket Audio Walk</span>
+                <span>Audio Walk</span>
               </button>
             </div>
           </div>
@@ -594,16 +578,14 @@ function NatureGoContent() {
           </div>
         )}
 
-        {/* Tab 2: Quests Catalog */}
+        {/* Tab 2: Quests */}
         {activeTab === 'quests' && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-bold text-white">Outdoor Quests Catalog</h3>
-                <p className="text-xs text-neutral-400">
-                  Choose a quest to look for outside, or create your own custom challenge
-                </p>
-              </div>
+            <div>
+              <h3 className="text-lg font-bold text-white">Nature Quests</h3>
+              <p className="text-xs text-neutral-400">
+                Pick an item to find outside, or create your own quest!
+              </p>
             </div>
 
             <QuestSelector

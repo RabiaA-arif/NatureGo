@@ -60,9 +60,9 @@ export const ScreenFreeMode: React.FC<ScreenFreeModeProps> = ({
 
     let textToSpeak = '';
     if (lastResult.is_valid) {
-      textToSpeak = `Outdoor discovery verified! ${lastResult.nature_fact}`;
+      textToSpeak = `Nature discovery verified! ${lastResult.nature_fact}`;
     } else {
-      textToSpeak = `Authenticity warning: ${lastResult.rejection_reason || 'Target not found'}. Make sure you are physically outdoors and not photographing a screen or indoor plant.`;
+      textToSpeak = `Tip: ${lastResult.rejection_reason || 'Target not found'}. Make sure you are outside in daylight.`;
     }
 
     narrateText(
@@ -83,7 +83,7 @@ export const ScreenFreeMode: React.FC<ScreenFreeModeProps> = ({
   };
 
   const handleRepeatInstructions = () => {
-    const text = `Current quest target: ${quest.target}. ${quest.hints[0] || 'Look closely in nature.'} Tap the screen when ready to photograph.`;
+    const text = `Find: ${quest.target}. ${quest.hints[0] || 'Look closely in nature.'} Tap the screen when ready to take a photo.`;
     narrateText(
       text,
       () => setIsSpeaking(true),
@@ -104,74 +104,74 @@ export const ScreenFreeMode: React.FC<ScreenFreeModeProps> = ({
       >
         <button
           onClick={onExit}
-          className="flex items-center gap-2 px-3 py-2 bg-neutral-900/90 hover:bg-neutral-800 rounded-xl text-neutral-300 text-xs font-semibold border border-neutral-800"
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-neutral-900/90 hover:bg-neutral-800 rounded-xl text-neutral-300 text-xs font-semibold border border-neutral-800 cursor-pointer"
         >
-          <ArrowLeft className="w-4 h-4" />
-          <span>Exit Pocket Mode</span>
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span>Exit Audio Walk</span>
         </button>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setAudioMuted(!audioMuted)}
-            className="p-2.5 bg-neutral-900/90 hover:bg-neutral-800 rounded-xl text-neutral-300 border border-neutral-800"
-            title={audioMuted ? 'Unmute Audio' : 'Mute Audio'}
+            className="p-2 bg-neutral-900/90 hover:bg-neutral-800 rounded-xl text-neutral-300 border border-neutral-800 cursor-pointer"
+            title={audioMuted ? 'Unmute' : 'Mute'}
           >
             {audioMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
           </button>
         </div>
       </div>
 
-      {/* Center Tactical Screen-Free Experience */}
+      {/* Center Screen-Free Experience */}
       <div className="flex flex-col items-center justify-center text-center my-auto px-4">
-        <div className="relative mb-6">
-          <div className="w-32 h-32 rounded-full border-4 border-emerald-500/30 flex items-center justify-center bg-emerald-950/20">
-            <Camera className="w-12 h-12 text-emerald-400" />
+        <div className="relative mb-5">
+          <div className="w-28 h-28 rounded-full border-4 border-emerald-500/30 flex items-center justify-center bg-emerald-950/20">
+            <Camera className="w-10 h-10 text-emerald-400" />
           </div>
           {isSpeaking && (
             <div className="absolute -inset-3 rounded-full border-2 border-emerald-400/50 animate-ping pointer-events-none" />
           )}
         </div>
 
-        <div className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 mb-3">
+        <div className="text-xs font-bold text-emerald-400 flex items-center gap-1.5 mb-2">
           <Headphones className="w-4 h-4" />
-          <span>Pocket Audio Walk Active</span>
+          <span>Audio Walk Active</span>
         </div>
 
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">
-          Quest: {quest.target}
+        <h2 className="text-2xl font-bold text-white mb-2 capitalize">
+          {quest.title}
         </h2>
-        <p className="text-sm text-neutral-400 max-w-md mb-6 leading-relaxed">
-          Put your device in your pocket or hold by your side. Listen to the natural world. Tap anywhere on the screen to capture when you spot it!
+        <p className="text-xs text-neutral-400 max-w-sm mb-5 leading-relaxed">
+          Put your phone in your pocket. Look around in nature. Tap anywhere on screen to snap a photo when you find it!
         </p>
 
         {/* Status display if analyzing or recently evaluated */}
         {isAnalyzing ? (
-          <div className="p-4 rounded-2xl bg-neutral-900 border border-emerald-500/50 text-emerald-300 text-sm font-semibold flex items-center gap-2 animate-pulse">
+          <div className="p-3.5 rounded-2xl bg-neutral-900 border border-emerald-500/50 text-emerald-300 text-xs font-semibold flex items-center gap-2 animate-pulse">
             <Sparkles className="w-4 h-4" />
-            <span>Vision Intelligence checking photo...</span>
+            <span>Checking photo...</span>
           </div>
         ) : lastResult ? (
           <div
-            className={`p-4 rounded-2xl border text-sm max-w-md ${
+            className={`p-3.5 rounded-2xl border text-xs max-w-sm ${
               lastResult.is_valid
                 ? 'bg-emerald-950/80 border-emerald-600 text-emerald-200'
                 : 'bg-rose-950/80 border-rose-600 text-rose-200'
             }`}
           >
-            <div className="flex items-center gap-2 font-bold mb-1">
+            <div className="flex items-center gap-1.5 font-bold mb-1">
               {lastResult.is_valid ? (
                 <>
                   <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                  <span>Verified Discovery!</span>
+                  <span>Found!</span>
                 </>
               ) : (
                 <>
                   <AlertTriangle className="w-4 h-4 text-rose-400" />
-                  <span>Outdoor Verification Rejected</span>
+                  <span>Not quite matched</span>
                 </>
               )}
             </div>
-            <p className="text-xs leading-relaxed opacity-90">
+            <p className="leading-relaxed opacity-90 text-[11px]">
               {lastResult.is_valid
                 ? lastResult.nature_fact
                 : lastResult.rejection_reason}
@@ -183,18 +183,18 @@ export const ScreenFreeMode: React.FC<ScreenFreeModeProps> = ({
       {/* Bottom Large Tap Indicator */}
       <div
         onClick={(e) => e.stopPropagation()}
-        className="flex flex-col items-center gap-3 text-center"
+        className="flex flex-col items-center gap-2 text-center"
       >
         <button
           onClick={handleRepeatInstructions}
-          className="text-xs text-emerald-400/90 hover:text-emerald-300 underline underline-offset-4 flex items-center gap-1.5"
+          className="text-xs text-emerald-400/90 hover:text-emerald-300 underline underline-offset-4 flex items-center gap-1.5 cursor-pointer"
         >
           <Volume2 className="w-3.5 h-3.5" />
-          <span>Repeat Audio Directions</span>
+          <span>Repeat Audio Clues</span>
         </button>
 
         <p className="text-[11px] text-neutral-500">
-          [Tap anywhere on this screen to snap photo]
+          Tap anywhere on screen to take photo
         </p>
       </div>
     </div>
