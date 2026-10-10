@@ -15,6 +15,12 @@ import {
 import { auth, db, googleProvider } from '../firebase/config';
 import { handleFirestoreError, OperationType } from '../firebase/firestoreError';
 import { UserProfile } from '../types/nature';
+import {
+  saveUserToDirectory,
+  getAllSavedUsers,
+  getLastActiveUserId,
+  setLastActiveUserId,
+} from '../services/userDirectory';
 
 interface AuthContextType {
   currentUser: FirebaseUser | null;
@@ -56,7 +62,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
     try {
       const saved = localStorage.getItem('nature_go_cached_profile');
-      return saved ? JSON.parse(saved) : null;
+      if (saved) return JSON.parse(saved);
+      const lastId = getLastActiveUserId();
+      if (lastId) {
+        const all = getAllSavedUsers();
+        const found = all.find((u) => u.userId === lastId);
+        if (found) return found;
+      }
+      return null;
     } catch {
       return null;
     }
@@ -70,16 +83,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     (userProfile?.email && ADMIN_EMAILS.includes(userProfile.email.toLowerCase()))
   );
 
-  // Sync profile to localStorage for instant startup next time
+  // Sync profile to localStorage and user directory so it is NEVER lost on reload
   useEffect(() => {
     if (userProfile) {
       try {
         localStorage.setItem('nature_go_cached_profile', JSON.stringify(userProfile));
+        setLastActiveUserId(userProfile.userId);
+        saveUserToDirectory(userProfile);
       } catch (e) {
         console.warn('Could not cache user profile:', e);
       }
     } else {
       localStorage.removeItem('nature_go_cached_profile');
+      setLastActiveUserId(null);
     }
   }, [userProfile]);
 
@@ -122,8 +138,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           displayName: updatedProfile.displayName,
           photoURL: updatedProfile.photoURL,
           streakDays: currentStreak,
-        });
+        }).catch((e) => console.warn('Cloud update notice:', e));
 
+        saveUserToDirectory(updatedProfile);
         setUserProfile(updatedProfile);
       } else {
         // Create new user profile document in Firestore
@@ -145,7 +162,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           bio: 'Curious naturalist exploring the outdoor wild world.',
         };
 
-        await setDoc(userDocRef, newProfile);
+        await setDoc(userDocRef, newProfile).catch((e) => console.warn('Cloud setDoc notice:', e));
+        saveUserToDirectory(newProfile);
         setUserProfile(newProfile);
 
         // If admin, record in admins collection
@@ -160,7 +178,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       }
     } catch (err) {
       console.warn('Notice writing profile to Firestore:', err);
-      const fallbackProfile: UserProfile = {
+      // Check directory first to avoid resetting completed quests
+      const allUsers = getAllSavedUsers();
+      const existing = allUsers.find((u) => u.userId === user.uid || u.email === user.email);
+
+      const fallbackProfile: UserProfile = existing || {
         userId: user.uid,
         email: user.email || 'explorer@naturego.app',
         displayName: user.displayName || 'Nature Explorer',
@@ -173,6 +195,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         createdAt: new Date().toISOString(),
         lastLoginAt: new Date().toISOString(),
       };
+      saveUserToDirectory(fallbackProfile);
       setUserProfile((prev) => prev || fallbackProfile);
     }
   };
@@ -239,23 +262,37 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         };
         await updateDoc(userDocRef, { lastLoginAt: nowIso }).catch(() => {});
       } else {
-        profile = {
-          userId: demoUid,
-          email,
-          displayName: name,
-          photoURL: '',
-          role: 'user',
-          totalQuestsCompleted: 0,
-          streakDays: 1,
-          authenticityScore: 100,
-          createdAt: nowIso,
-          lastLoginAt: nowIso,
-          favoriteBiome: 'Forest Trail',
-          bio: 'Outdoor scout discovering natural wonders with Nature Go.',
-        };
+        // Check local directory if already exists
+        const allLocal = getAllSavedUsers();
+        const localMatch = allLocal.find((u) => u.userId === demoUid || u.email.toLowerCase() === email.toLowerCase());
+        if (localMatch) {
+          profile = {
+            ...localMatch,
+            displayName: name || localMatch.displayName,
+            lastLoginAt: nowIso,
+          };
+        } else {
+          profile = {
+            userId: demoUid,
+            email,
+            displayName: name,
+            photoURL: '',
+            role: 'user',
+            totalQuestsCompleted: 0,
+            streakDays: 1,
+            longestStreak: 1,
+            authenticityScore: 100,
+            createdAt: nowIso,
+            lastLoginAt: nowIso,
+            favoriteBiome: 'Forest Trail',
+            bio: 'Outdoor scout discovering natural wonders with Nature Go.',
+          };
+        }
         await setDoc(userDocRef, profile).catch(() => {});
       }
 
+      saveUserToDirectory(profile);
+      setLastActiveUserId(profile.userId);
       setUserProfile(profile);
     } catch (err) {
       console.error('Error logging in demo user:', err);
@@ -273,18 +310,26 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const userDocRef = doc(db, 'users', adminUid);
       const adminDocRef = doc(db, 'admins', adminUid);
 
-      const profile: UserProfile = {
+      const allLocal = getAllSavedUsers();
+      const localMatch = allLocal.find((u) => u.userId === adminUid || u.email.toLowerCase() === adminEmail.toLowerCase());
+
+      const profile: UserProfile = localMatch ? {
+        ...localMatch,
+        role: 'admin',
+        lastLoginAt: nowIso,
+      } : {
         userId: adminUid,
         email: adminEmail,
-        displayName: 'Nature Ranger Chief',
+        displayName: 'Chief Naturalist Rabia',
         photoURL: '',
         role: 'admin',
-        totalQuestsCompleted: 12,
-        streakDays: 14,
+        totalQuestsCompleted: 14,
+        streakDays: 7,
+        longestStreak: 12,
         authenticityScore: 98,
         createdAt: nowIso,
         lastLoginAt: nowIso,
-        favoriteBiome: 'Alpine Summit',
+        favoriteBiome: 'Forest Trail',
         bio: 'Lead Naturalist & System Administrator overseeing outdoor verification quests.',
       };
 
@@ -295,6 +340,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         assignedAt: nowIso,
       }, { merge: true }).catch(() => {});
 
+      saveUserToDirectory(profile);
+      setLastActiveUserId(profile.userId);
       setUserProfile(profile);
     } catch (err) {
       console.error('Admin login error:', err);
@@ -307,11 +354,12 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const updateProfileData = async (updates: Partial<UserProfile>) => {
     if (!userProfile) return;
     const updated = { ...userProfile, ...updates };
+    saveUserToDirectory(updated);
     setUserProfile(updated);
 
     try {
       const userDocRef = doc(db, 'users', userProfile.userId);
-      await updateDoc(userDocRef, updates);
+      await updateDoc(userDocRef, updates).catch(() => {});
     } catch (err) {
       console.warn('Profile update notice:', err);
     }
@@ -368,15 +416,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     await updateProfileData(updates);
   };
 
-  // Logout
+  // Logout (preserves user data in permanent directory & Firestore so admin dashboard retains it)
   const logout = async () => {
     setIsLoading(true);
     try {
+      if (userProfile) {
+        saveUserToDirectory({
+          ...userProfile,
+          lastLoginAt: new Date().toISOString(),
+        });
+        const userDocRef = doc(db, 'users', userProfile.userId);
+        await updateDoc(userDocRef, { lastLoginAt: new Date().toISOString() }).catch(() => {});
+      }
       if (auth.currentUser) {
         await signOut(auth);
       }
       setUserProfile(null);
       localStorage.removeItem('nature_go_cached_profile');
+      setLastActiveUserId(null);
     } catch (err) {
       console.error('Logout error:', err);
     } finally {

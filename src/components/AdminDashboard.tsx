@@ -23,6 +23,11 @@ import { db } from '../firebase/config';
 import { handleFirestoreError, OperationType } from '../firebase/firestoreError';
 import { UserProfile, Quest } from '../types/nature';
 import { useAuth } from '../context/AuthContext';
+import {
+  saveUserToDirectory,
+  getAllSavedUsers,
+  syncUsersDirectoryWithFirestore,
+} from '../services/userDirectory';
 
 interface AdminDashboardProps {
   onBack: () => void;
@@ -35,8 +40,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const { userProfile, isAdmin } = useAuth();
   const [activeTab, setActiveTab] = useState<'users' | 'discoveries' | 'addUser' | 'addQuest'>('users');
-  const [usersList, setUsersList] = useState<UserProfile[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [usersList, setUsersList] = useState<UserProfile[]>(() => getAllSavedUsers());
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
 
   // Selected user for inspection
@@ -57,27 +62,31 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [questDesc, setQuestDesc] = useState<string>('');
   const [questDifficulty, setQuestDifficulty] = useState<'easy' | 'medium' | 'hard'>('easy');
 
-  // Load all users from Firestore
+  // Load all users from Firestore & persistent directory
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
       const snap = await getDocs(collection(db, 'users'));
-      const list: UserProfile[] = [];
+      const cloudList: UserProfile[] = [];
       snap.forEach((d) => {
-        list.push(d.data() as UserProfile);
+        cloudList.push(d.data() as UserProfile);
       });
 
-      // If empty or initial, include current user
-      if (list.length === 0 && userProfile) {
-        list.push(userProfile);
+      const merged = syncUsersDirectoryWithFirestore(cloudList);
+      if (userProfile && !merged.some((u) => u.userId === userProfile.userId)) {
+        merged.unshift(userProfile);
+        saveUserToDirectory(userProfile);
       }
-      setUsersList(list);
+      setUsersList(merged);
     } catch (err) {
       console.warn('Notice loading users from Firestore:', err);
-      // Fallback to local profile if available
-      if (userProfile) {
-        setUsersList([userProfile]);
+      // Fallback to local persistent directory so accounts are NEVER lost
+      const localList = getAllSavedUsers();
+      if (userProfile && !localList.some((u) => u.userId === userProfile.userId)) {
+        localList.unshift(userProfile);
+        saveUserToDirectory(userProfile);
       }
+      setUsersList(localList);
     } finally {
       setIsLoading(false);
     }
@@ -89,48 +98,54 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   // Action: Toggle Admin status of a user
   const handleToggleRole = async (targetUser: UserProfile) => {
-    const newRole = targetUser.role === 'admin' ? 'user' : 'admin';
+    const newRole: 'user' | 'admin' = targetUser.role === 'admin' ? 'user' : 'admin';
+    const updated: UserProfile = { ...targetUser, role: newRole };
+
+    // Update persistent directory immediately
+    saveUserToDirectory(updated);
+
     try {
       const docRef = doc(db, 'users', targetUser.userId);
-      await updateDoc(docRef, { role: newRole });
-
-      // Update local state
-      setUsersList((prev) =>
-        prev.map((u) => (u.userId === targetUser.userId ? { ...u, role: newRole } : u))
-      );
-      if (inspectedUser?.userId === targetUser.userId) {
-        setInspectedUser({ ...inspectedUser, role: newRole });
-      }
+      await updateDoc(docRef, { role: newRole }).catch(() => {});
     } catch (err) {
       console.warn('Notice updating user role in DB:', err);
-      // Still update locally for interactive preview
-      setUsersList((prev) =>
-        prev.map((u) => (u.userId === targetUser.userId ? { ...u, role: newRole } : u))
-      );
-      if (inspectedUser?.userId === targetUser.userId) {
-        setInspectedUser({ ...inspectedUser, role: newRole });
-      }
+    }
+
+    setUsersList((prev) =>
+      prev.map((u) => (u.userId === targetUser.userId ? updated : u))
+    );
+    if (inspectedUser?.userId === targetUser.userId) {
+      setInspectedUser(updated);
     }
   };
 
   // Action: Award +1 task completed to user in DB
   const handleAwardTask = async (targetUser: UserProfile) => {
     const updatedCount = (targetUser.totalQuestsCompleted || 0) + 1;
+    const updated: UserProfile = {
+      ...targetUser,
+      totalQuestsCompleted: updatedCount,
+      lastLoginAt: new Date().toISOString(),
+    };
+
+    // Update persistent directory immediately
+    saveUserToDirectory(updated);
+
     try {
       const docRef = doc(db, 'users', targetUser.userId);
       await updateDoc(docRef, {
         totalQuestsCompleted: updatedCount,
         lastLoginAt: new Date().toISOString(),
-      });
+      }).catch(() => {});
     } catch (err) {
       console.warn('Notice awarding task in cloud DB:', err);
     }
 
     setUsersList((prev) =>
-      prev.map((u) => (u.userId === targetUser.userId ? { ...u, totalQuestsCompleted: updatedCount } : u))
+      prev.map((u) => (u.userId === targetUser.userId ? updated : u))
     );
     if (inspectedUser?.userId === targetUser.userId) {
-      setInspectedUser({ ...inspectedUser, totalQuestsCompleted: updatedCount });
+      setInspectedUser(updated);
     }
   };
 
@@ -149,6 +164,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       role: newUserRole,
       totalQuestsCompleted: newUserCompleted,
       streakDays: 1,
+      longestStreak: 1,
       authenticityScore: 100,
       createdAt: nowIso,
       lastLoginAt: nowIso,
@@ -156,14 +172,17 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       bio: 'Created via Nature Go Admin Management console.',
     };
 
+    // Save locally to directory immediately
+    saveUserToDirectory(newProfile);
+
     try {
       const docRef = doc(db, 'users', uid);
-      await setDoc(docRef, newProfile);
+      await setDoc(docRef, newProfile).catch(() => {});
     } catch (err) {
       console.warn('Notice saving new user profile to cloud DB:', err);
     }
 
-    setUsersList((prev) => [newProfile, ...prev]);
+    setUsersList((prev) => [newProfile, ...prev.filter((u) => u.userId !== uid)]);
     setFormSuccessMessage(`Explorer profile for ${newProfile.displayName} registered!`);
     setNewUserName('');
     setNewUserEmail('');

@@ -188,12 +188,12 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
       <div className="bg-neutral-900 border border-neutral-800 rounded-2xl sm:rounded-3xl w-full max-w-lg max-h-[94vh] flex flex-col overflow-hidden shadow-2xl animate-in fade-in duration-200">
         {/* Header */}
-        <div className="p-3.5 sm:p-5 flex items-center justify-between border-b border-neutral-800 shrink-0">
-          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <div className="p-3.5 sm:p-5 flex items-center justify-between border-b border-neutral-800 shrink-0 gap-2">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
             <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl sm:rounded-2xl bg-emerald-600 text-white flex items-center justify-center font-bold text-base sm:text-lg shadow shrink-0">
               {userProfile.displayName ? userProfile.displayName.charAt(0).toUpperCase() : 'E'}
             </div>
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <h3 className="text-sm sm:text-base font-bold text-white truncate">
                   {userProfile.displayName}
@@ -212,12 +212,25 @@ export const UserProfileModal: React.FC<UserProfileModalProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-1.5 sm:p-2 text-neutral-400 hover:text-white rounded-xl hover:bg-neutral-800 transition cursor-pointer shrink-0"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {/* Upper Actions: Prominently Visible Sign Out & Close Buttons */}
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <button
+              onClick={handleLogout}
+              className="px-2.5 sm:px-3 py-1.5 sm:py-2 bg-neutral-800/90 hover:bg-rose-950/70 hover:text-rose-300 text-neutral-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer border border-neutral-700/60 shadow-xs active:scale-95"
+              title="Sign Out of Account"
+            >
+              <LogOut className="w-3.5 h-3.5 text-rose-400" />
+              <span>Sign Out</span>
+            </button>
+
+            <button
+              onClick={onClose}
+              className="p-1.5 sm:p-2 text-neutral-400 hover:text-white rounded-xl hover:bg-neutral-800 transition cursor-pointer shrink-0"
+              title="Close Profile"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Scrollable Content */}

@@ -188,25 +188,41 @@ function NatureGoContent() {
       const scopedJournal = localStorage.getItem(`nature_go_journal_${activeUserId}`);
       if (scopedJournal) {
         setJournalEntries(JSON.parse(scopedJournal));
-      } else if (activeUserId === 'guest') {
-        const legacy = localStorage.getItem('nature_go_journal');
-        if (legacy) setJournalEntries(JSON.parse(legacy));
       } else {
-        setJournalEntries([]);
+        const legacy = localStorage.getItem('nature_go_journal');
+        if (legacy) {
+          const parsed = JSON.parse(legacy);
+          setJournalEntries(parsed);
+          localStorage.setItem(`nature_go_journal_${activeUserId}`, legacy);
+        } else {
+          setJournalEntries([]);
+        }
       }
 
       const scopedBadges = localStorage.getItem(`nature_go_badges_${activeUserId}`);
       if (scopedBadges) {
         setBadges(JSON.parse(scopedBadges));
       } else {
-        setBadges(INITIAL_BADGES);
+        const legacyBadges = localStorage.getItem('nature_go_badges');
+        if (legacyBadges) {
+          setBadges(JSON.parse(legacyBadges));
+        } else {
+          setBadges(INITIAL_BADGES);
+        }
       }
 
       const scopedCompleted = localStorage.getItem(`nature_go_completed_quests_${activeUserId}`);
       if (scopedCompleted) {
         setCompletedQuestsMap(JSON.parse(scopedCompleted));
       } else {
-        setCompletedQuestsMap({});
+        const legacyCompleted = localStorage.getItem('nature_go_completed_quests');
+        if (legacyCompleted) {
+          const parsed = JSON.parse(legacyCompleted);
+          setCompletedQuestsMap(parsed);
+          localStorage.setItem(`nature_go_completed_quests_${activeUserId}`, legacyCompleted);
+        } else {
+          setCompletedQuestsMap({});
+        }
       }
 
       const scopedCustom = localStorage.getItem(`nature_go_custom_quests_${activeUserId}`);
@@ -220,9 +236,9 @@ function NatureGoContent() {
     }
   }, [activeUserId]);
 
-  // Sync user discoveries from Firestore database when authenticated user signs in
+  // Sync user discoveries from Firestore database when user signs in
   useEffect(() => {
-    if (!userProfile?.userId || !auth.currentUser || auth.currentUser.uid !== userProfile.userId) return;
+    if (!userProfile?.userId) return;
 
     async function loadUserDiscoveries() {
       try {
@@ -238,7 +254,14 @@ function NatureGoContent() {
             const map = new Map<string, JournalEntry>();
             prev.forEach((item) => map.set(item.id, item));
             cloudEntries.forEach((item) => map.set(item.id, item));
-            return Array.from(map.values()).sort((a, b) => b.timestamp - a.timestamp);
+            const merged = Array.from(map.values()).sort((a, b) => b.timestamp - a.timestamp);
+            try {
+              localStorage.setItem(`nature_go_journal_${activeUserId}`, JSON.stringify(merged));
+              localStorage.setItem('nature_go_journal', JSON.stringify(merged));
+            } catch (err) {
+              console.warn('Local persist notice:', err);
+            }
+            return merged;
           });
         }
       } catch (err) {
@@ -247,13 +270,15 @@ function NatureGoContent() {
     }
 
     loadUserDiscoveries();
-  }, [userProfile?.userId]);
+  }, [userProfile?.userId, activeUserId]);
 
-  // Persist user journal
+  // Persist user journal (never overwrite with empty array if storage had entries)
   useEffect(() => {
     try {
       localStorage.setItem(`nature_go_journal_${activeUserId}`, JSON.stringify(journalEntries));
-      localStorage.setItem('nature_go_journal', JSON.stringify(journalEntries));
+      if (journalEntries.length > 0) {
+        localStorage.setItem('nature_go_journal', JSON.stringify(journalEntries));
+      }
     } catch (e) {
       console.warn('Failed to save journal to localStorage:', e);
     }
@@ -263,6 +288,9 @@ function NatureGoContent() {
   useEffect(() => {
     try {
       localStorage.setItem(`nature_go_completed_quests_${activeUserId}`, JSON.stringify(completedQuestsMap));
+      if (Object.keys(completedQuestsMap).length > 0) {
+        localStorage.setItem('nature_go_completed_quests', JSON.stringify(completedQuestsMap));
+      }
     } catch (e) {
       console.warn('Failed to save completed quests map:', e);
     }
@@ -412,15 +440,13 @@ function NatureGoContent() {
       [targetKey]: updatedRecord,
     }));
 
-    // Save to Firestore Database under user's profile if authenticated
+    // Save to Firestore Database under user's profile
     if (userProfile?.userId) {
-      if (auth.currentUser && auth.currentUser.uid === userProfile.userId) {
-        try {
-          const docRef = doc(db, 'users', userProfile.userId, 'discoveries', newEntry.id);
-          await setDoc(docRef, newEntry);
-        } catch (err) {
-          console.warn('Could not save discovery to Firestore database:', err);
-        }
+      try {
+        const docRef = doc(db, 'users', userProfile.userId, 'discoveries', newEntry.id);
+        await setDoc(docRef, newEntry).catch(() => {});
+      } catch (err) {
+        console.warn('Could not save discovery to Firestore database:', err);
       }
       // Record completed task and update streak & authenticity score in user profile DB & state
       await recordQuestCompletion(lastVerificationResult.confidence_score);
