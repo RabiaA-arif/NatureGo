@@ -1,5 +1,26 @@
 # Nature Go
 
+## Project Visuals
+
+<img width="883" height="265" alt="image" src="https://github.com/user-attachments/assets/25fe1858-129f-4d11-954e-2bb2d91b1f25" />
+
+<img width="892" height="248" alt="image" src="https://github.com/user-attachments/assets/d82f8158-17d5-4654-b884-bc2a356c3460" />
+
+<img width="412" height="419" alt="image" src="https://github.com/user-attachments/assets/3852f363-b5a3-4eac-8844-eb1d9473b72c" />
+
+
+<img width="909" height="242" alt="image" src="https://github.com/user-attachments/assets/14780e76-780f-440c-93e8-ccce033cc7a6" />
+
+<img width="405" height="405" alt="image" src="https://github.com/user-attachments/assets/86478bed-41ec-48d6-9801-080be5a0cc4c" />
+
+<img width="428" height="428" alt="image" src="https://github.com/user-attachments/assets/572a1064-6c90-4c9c-a091-910ff5db439b" />
+
+<img width="426" height="378" alt="image" src="https://github.com/user-attachments/assets/e7436f4b-528e-446d-b95a-905858e35683" />
+
+<img width="904" height="440" alt="image" src="https://github.com/user-attachments/assets/03dcfced-2865-4bb8-9497-3db0bc48aefd" />
+
+<img width="869" height="393" alt="image" src="https://github.com/user-attachments/assets/440ee1ca-7699-4d8c-a5bb-98f30fd27a92" />
+
 ## 1. Project Overview
 
 - **Project name:** Nature Go
